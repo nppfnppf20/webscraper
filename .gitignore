@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node / Svelte
+node_modules/
+dist/
+.svelte-kit/
+.vite/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Playwright downloads/cache (if any)
+playwright/.cache/
+

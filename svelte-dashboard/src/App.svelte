@@ -1,47 +1,73 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { onMount } from 'svelte';
+  import RtpiEvents from './pages/RtpiEvents.svelte';
+  import DunholmeConsultations from './pages/DunholmeConsultations.svelte';
+  import PeeringdbIxGb from './pages/PeeringdbIxGb.svelte';
+  import PeeringdbFacilitiesGb from './pages/PeeringdbFacilitiesGb.svelte';
+
+  let currentPath = window.location.hash.slice(1) || '/events';
+
+  onMount(() => {
+    const handleHashChange = () => {
+      currentPath = window.location.hash.slice(1) || '/events';
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  });
 </script>
 
+<nav>
+  <a href="#/events" class:active={currentPath === '/events'}>RTPI Events</a>
+  <a href="#/dunholme" class:active={currentPath === '/dunholme'}>Dunholme Consultations</a>
+  <a href="#/peeringdb" class:active={currentPath === '/peeringdb'}>PeeringDB IX (GB)</a>
+  <a href="#/peeringdb-fac" class:active={currentPath === '/peeringdb-fac'}>PeeringDB Facilities (GB)</a>
+  <span class="spacer" />
+  <a href="#/events" class="brand">Web Scraper Dashboard</a>
+  
+</nav>
+
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  {#if currentPath === '/events'}
+    <RtpiEvents />
+  {:else if currentPath === '/dunholme'}
+    <DunholmeConsultations />
+  {:else if currentPath === '/peeringdb'}
+    <PeeringdbIxGb />
+  {:else if currentPath === '/peeringdb-fac'}
+    <PeeringdbFacilitiesGb />
+  {:else}
+    <p>Page not found.</p>
+  {/if}
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  nav {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+  nav a {
+    text-decoration: none;
+    color: #333;
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
+  nav a.active {
+    font-weight: 600;
+    color: #0d6efd;
   }
-  .read-the-docs {
-    color: #888;
+  nav .brand {
+    margin-left: auto;
+    color: #666;
+    font-size: 0.9rem;
   }
+  main {
+    padding: 16px;
+  }
+  .spacer { flex: 1; }
+  
 </style>
