@@ -21,7 +21,7 @@
   <a href="#/dunholme" class:active={currentPath === '/dunholme'}>Dunholme Consultations</a>
   <a href="#/peeringdb" class:active={currentPath === '/peeringdb'}>PeeringDB IX (GB)</a>
   <a href="#/peeringdb-fac" class:active={currentPath === '/peeringdb-fac'}>PeeringDB Facilities (GB)</a>
-  <span class="spacer" />
+  <span class="spacer"></span>
   <a href="#/events" class="brand">Web Scraper Dashboard</a>
   
 </nav>

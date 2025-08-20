@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchPeeringdbIxGb } from '../lib/api';
+  import { fetchPeeringdbIxGb } from '../lib/api.js';
 
   let rows = [];
   let loading = true;

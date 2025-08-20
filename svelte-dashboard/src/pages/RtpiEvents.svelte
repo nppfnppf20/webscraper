@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchRtpiEvents } from '../lib/api';
+  import { fetchRtpiEvents } from '../lib/api.js';
 
   let events = [];
   let loading = true;

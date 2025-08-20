@@ -1,0 +1,247 @@
+id,name,address,city,country,postal_code
+34,Telehouse - London (Docklands North),14 Coriander Avenue,London,GB,E14 2AA
+35,Digital Realty London LHR17,Unit 1,West Drayton,GB,UB7 0NA
+39,Telehouse - London (Docklands East),14 Coriander Avenue,London,GB,E14 2AA
+40,Digital Realty London LHR20,Sovereign House,London,GB,E14 9SD
+43,Digital Realty London LHR19,Cloud House,London,GB,E14 9TR
+45,"Equinix LD8 - London, Docklands",6-9 Harbour Exchange Square,London,GB,E14 9GE
+46,Digital Realty London LON1-3,11 Hanbury Street,London,GB,E1 6QR
+47,Global Switch London East,3 Nutmeg Lane,London,GB,E14 2AX
+48,Global Switch London North,240 East India Dock Road,London,GB,E14 944
+51,Exchange Tower London,1&2 Harbour Exchange Square,London,GB,E14 9GE
+76,"Equinix MA1 - Manchester, Williams/Kilburn",Manchester Science Park,Manchester,GB,M15 6SE
+78,"Reynolds House, Manchester",Reynolds House,Manchester,GB,M15 5RL
+79,Digital Realty London LHR21,"Memaco House, Meridian Gate",London,GB,E14 9FJ
+91,COLT DC London,"Welwyn Garden City, 20 Black Fan Road",London,GB,AL7 1QA
+243,Pulsant Newcastle NE-1 (Central),5 Bridge View,Newcastle upon Tyne,GB,NE1 6PN
+244,ServerBank Manchester,Faulkner Street,Manchester,GB,M1 4EH
+248,Level(3) London (Braham Street),6 Braham St,London,GB,E1 8EE
+254,Redcentric London Data Centre,80 Clifton Street,London,GB,EC2A 4HB
+271,Pulsant Edinburgh SC-1 (South Gyle),"The Clocktower Estate, Flassches Yard",Edinburgh,GB,EH12 9LB
+305,iomart DC1 Glasgow,88 Middlesex Street,Glasgow,GB,G41 1EE
+334,Pulsant Maidenhead SE-2,BlueSquare House,Maidenhead,GB,SL6 2HP
+335,The Bunker (Ash),Ash Radar Station,Sandwich,GB,CT13 0PL
+352,London Hosting Centre,"City Reach, 6 Greenwich View Place",London,GB,E14 9NN
+354,Level(3) London (Goswell Road),260-266 Goswell Road,London,GB,EC1V 7EB
+398,"Equinix LD3 - London, Park Royal","Matrix Unit 11, 900 Coronation Road",London,GB,NW10 7PH
+399,"Equinix LD4 - London, Slough",2 Buckingham Avenue,Slough,GB,SL1 4NB
+418,TATA Communications Stratford,78 - 102 The Broadway,London,GB,E15 1NG
+428,iomart DC2 London,Epworth Street,London,GB,EC2A 4DN
+438,Synergy House Manchester,"1 Synergy House, Manchester Science Park",Manchester,GB,M15 6SY
+534,"Equinix LD9 - London, Powergate","Unit 1, Powergate Business Park",London,GB,NW10 6PW
+565,Kent Science Park,Kent Science Park,Kent,GB,ME9 8PX
+571,SloughIX,Slough Interchange,Slough,GB,SL2 5EP
+601,Teledata Manchester - Delta House,Delta House,Manchester,GB,M22 5QZ
+631,Rackspace Slough,115 Buckingham Avenue,Slough,GB,SL1 4PF
+633,Pulsant Reading SE-4 (East),Unit 50 & 53 Suttons Business Park,Reading,GB,RG6 1AZ
+656,The Bunker (Newbury),Venture West,Thatcham,GB,RG19 6HX
+676,iomart DC3 Nottingham,2-6 Fisher Gate,Nottingham,GB,NG1 1FY
+677,iomart DC4 Leicester,16 Berkley Street,Leicester,GB,LE1 4AT
+734,Pulsant Milton Keynes SE-1,St. Neots House,Milton Keynes,GB,MK14 6LY
+745,Gigastream Oxford 1,"Unit 4, Oxford Business Centre",Oxford,GB,OX1 1TB
+764,The UK Grid Network LTD (Greenheys DC),"Greenheys, Manchester Science Park",Manchester,GB,M15 6SY
+832,"Equinix LD5 - London, Slough",8 Buckingham Avenue,Slough,GB,SL1 4AX
+835,Telehouse - London (Docklands West),14 Coriander Avenue,London,GB,E14 2AA
+840,Reading Data,58 Portman Road,Reading,GB,RG30 1EA
+896,aql Salem Church,11-15 Hunslet Road,Leeds,GB,LS10 1JQ
+990,4D Surrey,122 Oyster Lane,Byfleet,GB,KT14 7JU
+1009,Reliance Skewjack,"B3315, St Levant",Penzance,GB,TR 19 6NB
+1027,VIRTUS LONDON1 (Enfield),"Unit 3, Trade City, Crown Road",London,GB,EN1 1TX
+1074,Options West London Data Centre,3 Waxlow Road,London,GB,NW10 7NU
+1108,Leeds DC1,North Street,Leeds,GB,LS7 2AA
+1140,Host-IT Bletchley,Bletchley,Milton Keynes,GB,MK1
+1206,ARO DC2 Kilby House (AIMES),Kilby House,Liverpool,GB,L7 9NJ
+1207,Bournemouth Data Centre,County Gates House,Bournemouth,GB,BH12 1AZ
+1243,iomart DC6 Turing House,Turing House,Manchester,GB,M15 5RL
+1263,LDeX1,"Units 8 - 10, The Oxgate Business Centre",London,GB,NW2 7JA
+1264,iomart DC7 The Server Hotel Reynolds,Reynolds House,Manchester,GB,M15 5RL
+1265,Greenheys,Greenheys,Manchester,GB,M15 6JJ
+1267,QiComm Tutis Point,5 Greenwich View Place,London,GB,E14 9NN
+1300,ANS - MAN4,2 Adbaston Road,Manchester,GB,M32 0TP
+1311,Six Degrees Studley South,Birmingham Road,Studley,GB,B80 7BG
+1312,Six Degrees Studley North,Birmingham Road,Studley,GB,B80 7BG
+1331,ServerChoice  SC-2,"BioPark, Broadwater Road,",Welwyn Garden City,GB,AL7 3AX 
+1372,Neos Networks Hampshire,18 Brunel Way,Hampshire,GB,PO15 5TX
+1388,Rackspace London Slough (LON3),115 Buckingham Avenue,Slough,GB,SL1 4PF
+1403,"Equinix MA3 - Manchester, Joule House",76 Trafford Park Road,Manchester,GB,M17 1HE
+1547,Verne London,36-43 Great Sutton Street,London,GB,EC1V0AB
+1548,NGD Newport,Celtic Way,Newport,GB,NP10 8UW
+1621,Amatis Newbury,Castle Industrial Park,Newbury,GB,RG14 2EZ
+1680,brightsolid Dundee Data Centre,Gateway House,Dundee,GB,DD2 1TP
+1683,ANS - MAN5,Unit 19 Blackmore Road,Manchester,GB,M32 0QY
+1684,ANS - MAN6,Unit 20a & 20b Blackmore Road,Manchester,GB,M32 0QY
+1699,ServerChoice SC-1,"Unit HJK, Gateway 1000,",Stevenage,GB,12FP
+1702,Reliance House,Reliance House,Newcastle upon Tyne,GB,NE4 7AN
+1728,Safehosts Cheltenham,Saxon House,Cheltenham,GB,GL52 6QX
+1740,iomart DC9 Gosport,2 Frater Gate Business Park,Gosport,GB,PO130GW
+1753,Daisy Reading,1 Transcentral Bennet Road,Reading,GB,RG2 0QX
+1792,Digital Realty London LHR13,Fountain Court,Chessington,GB,KT9 1SJ
+1793,Redhill Datacenter,3 Foxboro Business Park,Redhill,GB,RH1 1AX
+1802,Pulsant Edinburgh SC-3 (Newbridge),7 Claylands Road,Edinburgh,GB,EH28 8LF
+1817,BT Empire Exchange / Stadium House,5  Park Street,Cardiff,GB,CF10 1NT
+1827,Legend Bradford,167-169 Sunbridge Road,Bradford,GB,BD1 2HB
+1843,nLighten Milton Keynes LTN1,1 Brick Close,Milton Keynes,GB,MK11 3JB
+1848,ASK4 DC1 - Sheffield,Sheffield,Sheffield,GB,S9
+1872,Colocker,Interchange Park,Milton Keynes,GB,MK16 9PY
+1934,Arelion London HEX,1 Harbour Exchange Square,London,GB,E14 9GE
+1959,Bytemark YO26 DC1,2 Opus Avenue,York,GB,YO26 6BL
+1963,Digital Realty London LGW14,"Unit 21, Goldsworth Park Trading Estate",Woking,GB,GU21 3BA
+2009,Brighton Digital Exchange BTN1,New England House,Brighton,GB,BN1 4GH
+2028,FLAG London,,London,GB,
+2090,LINX Wales - BT Stadium House,Stadium House,Cardiff,GB,CF10 1XR
+2117,ServerHouse P1,Delme Place,Fareham,GB,PO16 8UX
+2168,Midlands Technology Centre,Midlands Technology Centre,Wolverhampton,GB,WV10 6TA
+2192,Pulsant Reading SE-3 (South),"Unit 2, Smallmead Road",Reading,GB,RG2 0QS
+2229,Nasstar GBTEL01 Datapoint House,Datapoint House,Telford,GB,TF1 7UL
+2230,Entanet Telford DC3,Stafford Park 6,"Telford, Shropshire",GB,TF3 3AT
+2244,Stream Networks - Newbury,"2, Riverside House",Newbury,GB,RG14 5QS
+2262,"Equinix LD6 - London, Slough",352 Buckingham Avenue,Slough,GB,SL1 4PF
+2277,Datum,Cody Technology Park,Farnborough,GB,GU14 0LX
+2345,Chubb Buildings,Chubb Buildings,Wolverhampton,GB,WV1 1HT
+2360,LDeX2,"Unit 6, Waterside",Manchester,GB,M17 1WD
+2384,aql DC5,"Canon House, Apex Way",Leeds,GB,
+2417,brightsolid Aberdeen Data Centre,Lang Stracht,Aberdeen,GB,AB15 6DF
+2429,"Ark Data Centres - Spring Park - SQ17, P1, P2, P3, P4, P5",Westwells Road,Corsham,GB,SN13 9GB
+2627,Cyxtera London (LHR1),630 Ajax Ave.,Slough,GB,SL1 4DG
+2628,Cyxtera London (LHR2),7 Greenwich View Pl,London,GB,E14
+2631,Cyxtera London (LHR3),Eskdale Road,Wokingham,GB,RG41 5TS
+2682,Custodian CDC Maidstone 1,Custodian DataCentres,Maidstone,GB,ME14 5NZ
+2683,CSD Network Services Ltd,10 New Road,Braintree,GB,CM77 6TG
+2807,DC01 -Baltic Creative,49 Jamaica St,Liverpool,GB,L1 0AH
+2894,iomart DC5 Maidenhead,"Spectrum House, Clivemont Road",Maidenhead,GB,SL6 7FW
+2907,"Equinix MA4 - Manchester, Synergy House",Synergy House,Manchester,GB,M15 6SY
+2992,DataVita DV1 Lanarkshire,Unit 1 York Road,Glasgow,GB,ML6 8HW
+3144,Fastnet Brighton Datacentre,Ditchling Road,Brighton,GB,BN1 4ST
+3150,VeloxServ DC1 - Wolverhampton,Merryhills Enterprise Park,Wolverhampton,GB,WV10 9TJ
+3152,"Equinix LD10 - London, Slough",13 Liverpool Road,Slough,GB,SL1 4PF
+3213,Six Degrees Birmingham Central,Garrison Technology Park,Birmingham,GB,B9 4ER
+3226,HA Hosting DC1,Unit 9,Sheffield,GB,S20 3FJ
+3399,Digital Realty London LHR18,55-71 CITY RD,London,GB,EC1Y 1HQ
+3631,VIRTUS LONDON4 (Slough),14 Liverpool Rd,Slough,GB,SL1
+3884,CWCS DCN1,Portland Street,Nottingham,GB,NG9 2LP
+4027,Nigsun Data Centre NCS1,4 Modular Business Park  Norton Road,Stevenage,GB,SG1 2BB
+4060,Itility BVDC,Hyde Road,Manchester,GB,M12 5NQ
+4088,AtlasEdge DC London LYC001,Princes Court Wapping Lane,London,GB,E1W 2DA
+4089,COLT DC London II,"Powergate, Volt Avenue",London,GB,NW10 6PN
+4149,CyrusOne London 1,12 Liverpool Road,Slough,GB,SL1 4QZ
+4150,CyrusOne London 2,DC2 Prologis Park Heathrow,West Drayton,GB,UB7 9FN
+4231,Netwise London Central (NLC),Netwise House,Bermondsey,GB,SE16 4AW
+4343,4D Gatwick (Crawley),17-19 Kelvin Lane,Crawley,GB,RH10 9EY
+4351,South West Communications Exeter,Moor Lane,Exeter,GB,EX27JF
+4360,Telehouse - London (Docklands North Two),14 Coriander Avenue,London,GB,E14 2AA
+4404,VIRTUS LONDON2 (Hayes),VIRTUS Data Centre,Hayes,GB,UB2 5XX
+4405,VIRTUS LONDON3 (Slough),14 Liverpool Road,Slough,GB,SL1 4QZ
+4462,Elstree Customer Hosting Centre,Regent House,Borehamwood,GB,WD6 4RS
+4463,Bolton Customer Hosting Centre,"Hallmark House, Paragon Business Park",Bolton,GB,BL6 6HG
+4487,Keppel Data Centres | GV7 Data Centre,7 Greenwich View Place,London,GB,E14 9NN
+4545,ServerHouse F2,14 Brunel Way,Fareham,GB,PO15 5TX
+4762,DC02 - The Tapestry,68-76 Kempston St,Liverpool,GB,L3 8ET
+4798,Digital Realty London LGW16,"North Building, Power Avenue",Crawley,GB,RH10 9BE
+4885,VIRTUS LONDON5 (Stockley Park),Prologis Park West London,Stockley Park,GB,UB11 1HB
+4974,Epsilon Global Hubs London,Telephone House,London,GB,EC2A 4NW
+5149,Vision247 - Chiswick Datacenter,"566, Chiswick High Road",London,GB,w4 5xs
+5238,CentriLogic Arlington (ARL),No. 5 Arlington Square,Bracknell,GB,RG12 1WA
+5279,Internet For Business Limited,54 Hareness Road,Aberdeen,GB,AB12 3LE
+5441,Serverfarm LON1 London,"Unit 4, Westgate Industrial Estate",Feltham,GB,TW14 8RS
+5993,"Indectron GCR1 - Gloucester, Shield House","Shield House, 2 Crest Way",Gloucester,GB,GL4 3DH
+6347,Iron Mountain Data Center - London (LON-1),724-729 Dundee Road,Slough,GB,SL1 4JU
+6433,Satellite Mediaport,Lawford Heath Ln,Rugby,GB,CV23 9EU
+6462,VeloxServ DC2 - Wolverhampton,Merryhills Enterprise Park,Wolverhampton,GB,WV10 9TJ
+6482,SCC Fareham,18 Brunel Way,Fareham,GB,PO15 5TX
+6483,Pulsant Croydon LN-1,"Unit 1, 35 Imperial Way",Croydon,GB,CR0 4RR
+6535,"Equinix LD7 -  London, Slough",6 Banbury Ave,Slough,GB,SL1 4LH
+6750,Docklands Data Centre,5 Greenwich View Place,London,GB,E14 9NN
+6767,Exascale - Telford (TEL0),Unit 26,Telford,GB,TF1 5ST
+6893,ServerHouse F1,"Walled Garden, Cams Estate",Hampshire,GB,PO16 8AA
+6894,ServerHouse P2,West Barn,Hampshire,GB,PO16 8UT
+6923,DataGrid Network London,6-8 James St,London,GB,W1C 1JW
+7042,Kao Data Campus,London Road,Harlow,GB,CM17 9NA
+7216,ChunkyChips Data Centre,Carnival Business Park,Basildon,GB,SS14 3WN
+7425,NTT London 1 Data Center (LON1),Yew Tree Avenue,Dagenham,GB,RM10 7FN
+7500,Sungard AS London Technology Centre,"Unit B, Heathrow Corporate Park",Hounslow,GB,TW4 6ER
+8034,DC14-Leeds,Seacroft Ring Road,Leeds,GB,LS14 2AQ
+8035,Creslow Park,Creslow Park,Aylesbury,GB,HP22 4EH
+8078,"Ark Data Centres - Cody Park - A9, A101, A102, A103, A104, A105",Old Ively Rd,Farnborough,GB,GU14 OLL
+8381,IP House Data Centre,20 Lanrick Road,London,GB,E14 0JF
+8389,Stellium 1,9 Cobalt Park Way,Newcastle,GB,NE28 9EJ
+8390,Stellium 2 & 3,9 Cobalt Park Way,Newcastle,GB,NE28 9EJ
+8445,Timico - Telford (TEL),Timico Limited,Telford,GB,TF1 7GT
+8447,Timico - Newport (NPT),Timico Limited,Newport,GB,TF10 7BX
+8628,Datacenta DIP,Q.20,Winfrith Newburgh,GB,DT2 8ZB
+8825,aql DC3 Leeds,aql,Leeds,GB,LS10 1JW
+8872,DataBank London (LHR1),"Unit 4, Westgate Estate, Staines Road",Feltham,GB,TW14 8RS
+8983,Netwise London East (NLE),Unit 6 Datapoint Business Centre,Canning Town,GB,E16 4TL
+9031,NTT Hemel Hempstead 1 Data Center (HH1),"3 Centro, Boundary Way",Hemel Hempstead,GB,HP2 7SU
+9032,NTT Hemel Hempstead 2 Data Center (HH2),150 Maylands Avenue,Hemel Hempstead,GB,HP2 7DF
+9033,NTT Hemel Hempstead 3 Data Center (HH3),"Campus, Spring Way",Hemel Hempstead,GB,HP2 7TN
+9034,NTT Slough 2 Data Center (SL2),670 Ajax Avenue,"Slough,",GB,SL1 4BG
+9035,NTT Slough 3 Data Center (SL3),665 Ajax Avenue,Slough,GB,SL1 4BG
+9234,Legend Data Centres,The Legend Building,Bradford,GB,BD1 2HB
+9310,Prescient Data Centres Northern Ireland,Atlantic Link Enterprise Campus,Coleraine,GB,BT52 1FA
+9361,UK Servers Coventry,Continuity House,Coventry,GB,CV4 9UT
+9362,ABStation,"Unit 50, New Lydenburg Commercial Estate",Greenwich,GB,SE7 8NE
+9751,Keppel Data Centres | Cardiff Data Centre,"Ty Cynnal, Dunleavy Drive, Celtic Gateway, Cardiff CF110SW, United Kingdom",Cardiff,GB,CF110SW
+9888,Sungard AS Elland TC4,"Unit J1, Lowfields Business Park",Elland,GB,HX5 9DA
+10105,Lincoln Rackhouse London,Stanhope Rd,Camberley,GB,GU15
+10333,CyrusOne London 3,700 Stirling Rd,Slough,GB,SL1
+10334,CyrusOne London 4,225 Bath Rd,Slough,GB,SL1
+10335,CyrusOne London 5,225 Bath Rd,Slough,GB,SL1
+10342,China Mobile International - London DC,535 Ipswich Rd,Slough,GB,SL1
+10409,Cogent London CDC,20 Mastmaker Road,London,GB,E14 9UB
+10595,SDC Colchester1,890 The Crescent,Colchester,GB,CO4
+10831,Navisite Woking UK,"Unit 21, Goldsworth Park Trading Estate, Kestrel Way",Woking Surrey,GB,GU21 3BA
+10832,Navisite Redhill UK,3 Foxboro Business Park,"Redhill, Surrey",GB,RH1 1AX
+11078,HA Hosting DC2,Holbrook Commerce Park,Sheffield,GB,S20 3FJ
+11090,HA Hosting DC3,Merryhills Enterprise Park,Wolverhampton,GB,WV10 9TJ
+11296,NTT Hemel Hempstead 4 Data Center (HH4),1 Blossom Way,Hemel Hempstead,GB,HP2 4ZB
+11352,MyHostingSpace - Peterborough,DSM Group,Peterborough,GB,PE8 6NE
+11551,The Portal Data Centre (Flexiscale DC 1),Portal Retail & Business Park,Nottingham,GB,NG2 1AL
+11676,EXA Datacenter Bracknell,St. James House,Bracknell,GB,RG12 8 TH
+11678,nLighten London STN1,Geddings Road 7,Hoddesdon,GB,EN11 0NT
+11865,AtlasEdge DC Leeds LBA001,Cornelius House,Leeds,GB,LS12 6DS
+11899,Angel House,Angel House,Durham,GB,DH2 1AQ
+11969,EXA Datacenter London (Citi),25 Canada Square,London,GB,E14 5LQ
+11970,EXA Datacenter London (GS2 London East),3 Nutmeg Lane,London,GB,E14 2AX
+11977,EXA Edge DC Peterborough,Wainman Road,Peterborough,GB,PE2 7BU
+11978,EXA Edge DC Wherstead,Park Farm,Wherstead,GB,IP9 2AF
+11979,EXA Edge DC Wickford,Moorlands Industrial Estate,Wickford,GB,CM3 8HB
+12045,Telehouse - London (Docklands South),1 Blackwall Way,London,GB,E14 2EH
+12221,Cloud Innovation Poole Data Center,"Unit 6, The Concept Center",Poole,GB,BH12 4QD
+12309,Equinix MA5 - Manchester,Unit 2 Agecroft Commerce Park,Swinton,GB,M27 8BX
+12371,LCRDC - King Edward,Liverpool City Region Data Centres,Liverpool,GB,L3 7HJ
+12372,IX Liverpool - MICT,34 Norfolk Street,Liverpool,GB,L1 0BE
+12506,Servacus DC02,Servacus,Kettering,GB,NN14 1UE
+12820,SDC Hosting and Support Colchester1,890 The Crescent,Colchester,GB,CO4 9YQ
+12997,Custodian CDC Dartford DA2,CUSTODIAN D C,Dartford,GB,DA2 6QL
+13025,nLighten Birmingham BHX1,Westley Street,Birmingham,GB,B9 4ER
+13073,nLighten Nottingham EMA1,1 Bennerley Road,Nottingham,GB,NG6 8UY
+13074,nLighten Chester MAN1,Dunkirk Trading estate,Chester,GB,CH1 6LT
+13075,nLighten Bristol BRS1,1120 Park Avenue,Bristol,GB,BS32 4SX
+13091,VeloxServ DC3 - Redditch,Prospect House,Redditch,GB,B97 6EW
+13340,Pulsant Manchester NW-1,1-2 Ball Green,Manchester,GB,M32 0QT
+13421,Redcentric Harrogate Data Centre,Beckwith Knowle,Harrogate,GB,HG3 1UG
+13598,Ark Data Centres - Union Park,Union Park,Hayes,GB,UB3 4DG
+13691,"Getronics, The Babbage Centre",The Heath Business and Technical Park,Runcorn,GB,WA7 4QX
+13900,Croydon,2 Greenland Way,Croydon,GB,CR0 4GN
+14086,VeloxServ Wolverhampton Central,"Suite K5, Chubb Building",Wolverhampton,GB,WV1 1HT
+14316,nLighten Leeds LBA1,"White Rose Technology Centre, Don Pedro Ave",Normanton,GB,WF6 1TD
+14472,Vinters Connect,Vinters Business Park,Maidstone,GB,ME14 5NZ
+14555,AtlasEdge DC Manchester MAN001,Unit 400 Metroplex Business Park,Salford,GB,M50 2UE
+14752,nLighten Liverpool LPL1,Georgia Avenue,Wirral,GB,CH62 3RG
+14753,nLighten Swindon BRS2,11c Broadmoor Rd,Swindon,GB,SN3 4WB
+14754,nLighten Rugby BHX2,Unit 2 Pelham Rd,Rugby,GB,CV23 0PB
+14902,CWCS DCN3,3 Padge Road,Nottingham,GB,NG9 2JR
+15068,London Technology Centre,London Technology Centre (LTC),Hounslow,GB,TW4 6ER
+15069,Elland DC,unit J1,Elland,GB,HX5 9DA
+15135,Pulsant Edinburgh SC-2 (Medway),7 Bankhead,Edinburgh,GB,EH11 4BY
+15136,Pulsant Newcastle NE-2 (East),New York Way,Tyne & Wear,GB,NE27 0QF
+15137,Pulsant Rotherham YH-1,"Unit 1, Pioneer Close",Rotherham,GB,S63 7JZ
+15202,DataVita DV2 Glasgow,177 Bothwell Street,Glasgow,GB,G2 7ER
+15214,Ada Infrastructure (Docklands),North Woolrich Rd,London,GB,E16 2BY
+15328,Grid Hosting Limited,"Suite No 18-19, Parker House",Derby,GB,DE214SZ
+15752,Tarisu Limited,"71-75 Shelton Street, Covent Garden",London,GB,WC2H 9JQ
+15769,Exascale - Wolverhampton (WLV0),Exascale,Wolverhampton,GB,WV10 9TJ
+15781,Fast2host - Fast4networks Ltd,The Lakes Business Park,Cambridge,GB,PE28 9ET
+16182,Blynx AIM Ltd,Saxon House,Cheteham,GB,GL526AX
+16183,Blynx AIM Ltd.,Saxon House,Cheltenham,GB,GL52 6AX
+16360,Lumo Cloud,71-75 Shelton Street,London,GB,WC2H 9JQ

@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchWestLindseyApplication, fetchWestLindseyConsultations } from '../lib/api';
+  import { fetchWestLindseyApplication, fetchWestLindseyConsultations } from '../lib/api.js';
 
   let app = {};
   let consultations = [];
