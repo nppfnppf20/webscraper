@@ -1,0 +1,27 @@
+id,name,name_long,city,country,org_id,website,url
+18,LINX LON1,London Internet Exchange Ltd.,London,GB,791,https://www.linx.net/,https://www.linx.net/
+53,LONAP,London Access Point,London,GB,115,https://www.lonap.net/,https://www.lonap.net/
+321,LINX LON2,London Internet Exchange Ltd.,London,GB,791,http://www.linx.net/,http://www.linx.net/
+435,IXLeeds,Leeds Internet Exchange,Leeds / Western Yorkshire,GB,2850,http://ixleeds.net,http://ixleeds.net
+583,LINX Manchester,LINX Manchester,Manchester,GB,791,http://www.linx.net,http://www.linx.net
+745,LINX Scotland,LINX Scotland,Scotland,GB,791,http://www.linx.net,http://www.linx.net
+985,BDX BTN1,Brighton Internet Exchange,Brighton,GB,10417,http://bdx.coop,http://bdx.coop
+1016,LINX Wales,LINX Wales,Cardiff,GB,791,https://www.linx.net/,https://www.linx.net/
+1302,IX Liverpool - MICT,IX Liverpool - MICT Data Centre,Liverpool,GB,14113,http://www.ixliverpool.net,http://www.ixliverpool.net
+1927,Equinix Manchester,Equinix Internet Exchange Manchester,Manchester,GB,2,http://www.equinix.co.uk/services/interconnection-connectivity/internet-exchange/,http://www.equinix.co.uk/services/interconnection-connectivity/internet-exchange/
+1997,Equinix London,Equinix Internet Exchange London,London,GB,2,https://www.equinix.co.uk/services/interconnection-connectivity/internet-exchange/,https://www.equinix.co.uk/services/interconnection-connectivity/internet-exchange/
+2704,IXP UK LON,Internet Exchange Point - London,London,GB,19041,https://www.ixp.cat,https://www.ixp.cat
+2801,LONAP Multicast,,London,GB,115,https://www.lonap.net,https://www.lonap.net
+2955,IX Liverpool - Baltic Bubble,IX Liverpool - Baltic Bubble Data Centre,Liverpool,GB,14113,http://www.ixliverpool.net,http://www.ixliverpool.net
+2956,IX Liverpool Internet of Things LAN,,Liverpool,GB,14113,http://www.ixliverpool.net,http://www.ixliverpool.net
+2957,IX Liverpool GRX Peering Exchange (5G),,Liverpool,GB,14113,http://www.ixliverpool.net,http://www.ixliverpool.net
+3098,BFD-IX,BFD-IX,Bradford,GB,24546,https://bfd-ix.net,https://bfd-ix.net
+3189,BBIX London,BroadBand Internet eXchange London,London,GB,8440,https://www.bbix.net/en/,https://www.bbix.net/en/
+3278,IXBradford,,Bradford,GB,26198,http://www.ixbradford.net,http://www.ixbradford.net
+3373,NCL-IX,Newcastle IX,Newcastle,GB,25688,https://www.ncl-ix.uk/,https://www.ncl-ix.uk/
+3732,RapidIX LON1,Rapid Internet Exchange,London,GB,24396,https://rapidix.net,https://rapidix.net
+3821,BGP.Exchange - London,,London,GB,27398,https://bgp.exchange,https://bgp.exchange
+3877,SBIX London,Securebit Internet Exchange London,London,GB,21284,https://www.securebit.ch/internet/exchange,https://www.securebit.ch/internet/exchange
+4040,Edge IX Birmingham,,Birmingham,GB,17600,http://www.ixbirmingham.net,http://www.ixbirmingham.net
+4073,BGPHaus,BGPHaus,London,GB,33790,https://bgp.haus/,https://bgp.haus/
+4374,Stelia IX,,London,GB,28164,https://stelia.io/ix,https://stelia.io/ix
