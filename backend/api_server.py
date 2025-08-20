@@ -63,6 +63,12 @@ def get_peeringdb_fac_gb():
     return jsonify(read_csv_to_list_of_dicts(filepath))
 
 
+@app.route("/api/planit/datacentres")
+def get_planit_datacentres():
+    filepath = DATA_DIR / "planit_datacentres.csv"
+    return jsonify(read_csv_to_list_of_dicts(filepath))
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000, debug=True)
 

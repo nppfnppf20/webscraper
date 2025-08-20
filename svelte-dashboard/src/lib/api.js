@@ -30,3 +30,9 @@ export async function fetchPeeringdbFacGb() {
   return res.json();
 }
 
+export async function fetchPlanitDatacentres() {
+  const res = await fetch(`${API_BASE}/planit/datacentres`);
+  if (!res.ok) throw new Error('Failed to fetch PlanIt data centres');
+  return res.json();
+}
+
