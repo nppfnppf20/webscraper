@@ -49,6 +49,7 @@
         <tr>
           <th>Consultee</th>
           <th>Opinion</th>
+          <th>Comment</th>
           <th>Published</th>
           <th>Created</th>
           <th>Updated</th>
@@ -59,6 +60,7 @@
           <tr>
             <td>{c.consulteeName}</td>
             <td>{c.opinion}</td>
+            <td class="comment">{c.responseDetailsToPublish}</td>
             <td>{c.responsePublished}</td>
             <td>{c.createdTime}</td>
             <td>{c.lastModifiedTime}</td>
@@ -80,5 +82,6 @@
   th, td { border: 1px solid #ddd; padding: 8px; }
   th { background: #f5f5f5; text-align: left; }
   h2 { margin: 1rem 0 0.5rem; }
+  td.comment { white-space: pre-wrap; word-break: break-word; max-width: 540px; }
 </style>
 
