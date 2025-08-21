@@ -5,6 +5,7 @@
   import PeeringdbIxGb from './pages/PeeringdbIxGb.svelte';
   import PeeringdbFacilitiesGb from './pages/PeeringdbFacilitiesGb.svelte';
   import PlanitDatacentres from './pages/PlanitDatacentres.svelte';
+  import PlanitRenewables from './pages/PlanitRenewables.svelte';
 
   let currentPath = window.location.hash.slice(1) || '/events';
 
@@ -23,6 +24,7 @@
   <a href="#/peeringdb" class:active={currentPath === '/peeringdb'}>PeeringDB IX (GB)</a>
   <a href="#/peeringdb-fac" class:active={currentPath === '/peeringdb-fac'}>PeeringDB Facilities (GB)</a>
   <a href="#/planit-dc" class:active={currentPath === '/planit-dc'}>PlanIt Data Centres</a>
+  <a href="#/planit-renew" class:active={currentPath === '/planit-renew'}>PlanIt Renewables</a>
   <span class="spacer"></span>
   <a href="#/events" class="brand">Web Scraper Dashboard</a>
   
@@ -39,6 +41,8 @@
     <PeeringdbFacilitiesGb />
   {:else if currentPath === '/planit-dc'}
     <PlanitDatacentres />
+  {:else if currentPath === '/planit-renew'}
+    <PlanitRenewables />
   {:else}
     <p>Page not found.</p>
   {/if}

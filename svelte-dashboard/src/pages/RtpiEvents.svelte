@@ -5,6 +5,8 @@
   let events = [];
   let loading = true;
   let error = '';
+  let refreshing = false;
+  let msg = '';
 
   onMount(async () => {
     try {
@@ -15,7 +17,28 @@
       loading = false;
     }
   });
+
+  async function refreshNow() {
+    try {
+      refreshing = true;
+      msg = '';
+      const res = await fetch('http://127.0.0.1:8000/api/refresh/rtpi', { method: 'POST' });
+      const j = await res.json();
+      if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
+      events = await fetchRtpiEvents();
+      msg = `Refreshed (${j.csv}) in ${j.elapsed_s}s, rows: ${j.updated}`;
+    } catch (e) {
+      msg = e.message || 'Refresh failed';
+    } finally {
+      refreshing = false;
+    }
+  }
 </script>
+
+<div class="toolbar">
+  <button on:click={refreshNow} disabled={refreshing}>{refreshing ? 'Refreshing…' : 'Refresh'}</button>
+  {#if msg}<span class="msg">{msg}</span>{/if}
+</div>
 
 {#if loading}
   <p>Loading events…</p>
@@ -53,6 +76,8 @@
   a { color: #0d6efd; text-decoration: none; }
   a:hover { text-decoration: underline; }
   p { margin: 1rem 0; }
+  .toolbar { display:flex; align-items:center; gap:12px; margin: 8px 0; }
+  .msg { color:#555; font-size: 0.9rem; }
   
 </style>
 

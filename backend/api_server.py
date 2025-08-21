@@ -4,7 +4,11 @@ import csv
 from pathlib import Path
 from typing import List, Dict
 
-from flask import Flask, jsonify
+import sys
+import time
+import subprocess
+import threading
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 
@@ -67,6 +71,78 @@ def get_peeringdb_fac_gb():
 def get_planit_datacentres():
     filepath = DATA_DIR / "planit_datacentres.csv"
     return jsonify(read_csv_to_list_of_dicts(filepath))
+
+@app.route("/api/planit/renewables")
+def get_planit_renewables():
+    filepath = DATA_DIR / "planit_renewables.csv"
+    return jsonify(read_csv_to_list_of_dicts(filepath))
+
+
+# --- Refresh (re-scrape) endpoints ---
+_locks: dict[str, threading.Lock] = {
+    k: threading.Lock() for k in [
+        "rtpi", "west-lindsey", "peeringdb-ix", "peeringdb-fac", "planit-dc", "planit-renew"
+    ]
+}
+
+def _run_module(module_name: str) -> tuple[int, str, str]:
+    """Run a python module in the current venv, capture return code, stdout+stderr combined, and elapsed seconds (as string)."""
+    start = time.time()
+    proc = subprocess.run([sys.executable, "-m", module_name], capture_output=True, text=True)
+    elapsed = f"{time.time() - start:.2f}"
+    output = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode, output, elapsed
+
+def _count_rows(csv_filename: str) -> int:
+    filepath = DATA_DIR / csv_filename
+    try:
+        return len(read_csv_to_list_of_dicts(filepath))
+    except Exception:
+        return 0
+
+def _refresh(lock_key: str, module: str, csv_filename: str):
+    lock = _locks[lock_key]
+    if not lock.acquire(blocking=False):
+        return jsonify({"ok": False, "error": "already_running"}), 409
+    try:
+        code, out, elapsed = _run_module(module)
+        if code != 0:
+            return jsonify({"ok": False, "error": "runner_failed", "elapsed_s": elapsed, "log": out[-2000:]}), 500
+        rows = _count_rows(csv_filename)
+        return jsonify({"ok": True, "csv": csv_filename, "updated": rows, "elapsed_s": elapsed})
+    finally:
+        lock.release()
+
+
+@app.post("/api/refresh/rtpi")
+def refresh_rtpi():
+    return _refresh("rtpi", "backend.scraper.run_rtpi_events", "rtpi_events.csv")
+
+
+@app.post("/api/refresh/west-lindsey")
+def refresh_west_lindsey():
+    # Runs both application summary and consultations
+    return _refresh("west-lindsey", "backend.scraper.run_west_lindsey", "west_lindsey_consultations.csv")
+
+
+@app.post("/api/refresh/peeringdb-ix")
+def refresh_peeringdb_ix():
+    return _refresh("peeringdb-ix", "backend.scraper.run_peeringdb", "peeringdb_ix_gb.csv")
+
+
+@app.post("/api/refresh/peeringdb-fac")
+def refresh_peeringdb_fac():
+    return _refresh("peeringdb-fac", "backend.scraper.run_peeringdb_fac", "peeringdb_fac_gb.csv")
+
+
+@app.post("/api/refresh/planit-dc")
+def refresh_planit_dc():
+    return _refresh("planit-dc", "backend.scraper.run_planit_datacentres", "planit_datacentres.csv")
+
+
+@app.post("/api/refresh/planit-renew")
+def refresh_planit_renew():
+    return _refresh("planit-renew", "backend.scraper.run_planit_renewables", "planit_renewables.csv")
 
 
 if __name__ == "__main__":

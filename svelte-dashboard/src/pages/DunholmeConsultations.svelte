@@ -6,6 +6,8 @@
   let consultations = [];
   let loading = true;
   let error = '';
+  let refreshing = false;
+  let msg = '';
 
   onMount(async () => {
     try {
@@ -21,6 +23,27 @@
       loading = false;
     }
   });
+
+  async function refreshNow() {
+    try {
+      refreshing = true;
+      msg = '';
+      const res = await fetch('http://127.0.0.1:8000/api/refresh/west-lindsey', { method: 'POST' });
+      const j = await res.json();
+      if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
+      const [a, c] = await Promise.all([
+        fetchWestLindseyApplication(),
+        fetchWestLindseyConsultations()
+      ]);
+      app = a;
+      consultations = c;
+      msg = `Refreshed (${j.csv}) in ${j.elapsed_s}s, rows: ${j.updated}`;
+    } catch (e) {
+      msg = e.message || 'Refresh failed';
+    } finally {
+      refreshing = false;
+    }
+  }
 </script>
 
 {#if loading}
@@ -44,6 +67,12 @@
 
   <section>
     <h2>Consultations</h2>
+    <div class="toolbar">
+      <button on:click={refreshNow} disabled={refreshing}>
+        {refreshing ? 'Refreshing…' : 'Refresh'}
+      </button>
+      {#if msg}<span class="msg">{msg}</span>{/if}
+    </div>
     <table>
       <thead>
         <tr>
@@ -83,5 +112,7 @@
   th { background: #f5f5f5; text-align: left; }
   h2 { margin: 1rem 0 0.5rem; }
   td.comment { white-space: pre-wrap; word-break: break-word; max-width: 540px; }
+  .toolbar { display:flex; align-items:center; gap:12px; margin: 8px 0; }
+  .msg { color:#555; font-size: 0.9rem; }
 </style>
 

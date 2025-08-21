@@ -36,3 +36,9 @@ export async function fetchPlanitDatacentres() {
   return res.json();
 }
 
+export async function fetchPlanitRenewables() {
+  const res = await fetch(`${API_BASE}/planit/renewables`);
+  if (!res.ok) throw new Error('Failed to fetch PlanIt renewables');
+  return res.json();
+}
+
