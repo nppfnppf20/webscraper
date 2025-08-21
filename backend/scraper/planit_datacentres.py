@@ -77,10 +77,11 @@ def normalize(record: Dict) -> Dict[str, str]:
         "development_type": str(props.get("development_type", "")),
         "app_size": str(props.get("app_size", "")),
         "app_state": str(props.get("app_state", props.get("status", ""))),
-        "decision": str(props.get("decision", "")),
+        "decision": str(props.get("decision") or other.get("decision", "")),
         "start_date": str(props.get("start_date", "")),
         "decided_date": str(props.get("decided_date", "")),
         "last_changed": str(props.get("last_changed", "")),
+        "address": str(props.get("address", "")),
         "postcode": str(props.get("postcode", "")),
         "lat": str(props.get("lat", props.get("latitude", ""))),
         "lng": str(props.get("lng", props.get("longitude", ""))),
@@ -107,11 +108,7 @@ def fetch_all_major_datacentres_last_n_years(years: int = 5) -> List[Dict[str, s
                 if isinstance(rec, dict) and "properties" in rec:
                     props = rec["properties"]
                 row = normalize(props)
-                # Filter client-side for rows marked as Major-scale (when field exists)
-                app_size_val = (row.get("app_size") or "").strip().lower()
-                # Treat Large/Very Large as "major" scale
-                if app_size_val and app_size_val not in {"large", "very large"}:
-                    continue
+                # Size filter removed: include all sizes
                 # Keep only Full / Outline app_type
                 app_type_val = (row.get("app_type") or "").strip().lower()
                 if app_type_val not in {"full", "outline"}:
