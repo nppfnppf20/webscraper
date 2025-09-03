@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple, Optional
 from urllib.parse import urlencode
 
 from .session import make_session
+import requests
 
 
 PLANIT_BASE = "https://www.planit.org.uk"
@@ -16,6 +17,7 @@ SEARCH_TERMS = (
     '"solar" or "solar farm" or photovoltaic or "battery energy storage" or bess -roof -domestic -householder'
 )
 PAGE_SIZE = 300
+_POSTCODE_CACHE: Dict[str, Tuple[float, float]] = {}
 
 
 def month_range_backwards(months: int) -> List[Tuple[date, date]]:
@@ -63,6 +65,29 @@ def fetch_page(session, start: date, end: date, page: int) -> Dict:
         resp = session.get(url, timeout=30)
     resp.raise_for_status()
     return resp.json()
+
+
+def _postcode_to_latlng(postcode: str) -> Optional[Tuple[float, float]]:
+    pc = postcode.replace(" ", "").upper()
+    if not pc:
+        return None
+    if pc in _POSTCODE_CACHE:
+        return _POSTCODE_CACHE[pc]
+    try:
+        url = f"https://api.postcodes.io/postcodes/{pc}"
+        resp = requests.get(url, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            result = data.get("result")
+            if isinstance(result, dict):
+                lat = _to_float(result.get("latitude"))
+                lng = _to_float(result.get("longitude"))
+                if lat is not None and lng is not None:
+                    _POSTCODE_CACHE[pc] = (lat, lng)
+                    return _POSTCODE_CACHE[pc]
+    except Exception:
+        return None
+    return None
 
 
 def _parse_float_from_text(value: str) -> Optional[float]:
@@ -155,6 +180,13 @@ def normalize(record: Dict, geometry: Optional[Dict] = None) -> Dict[str, str]:
                 lat_f = _to_float(coords[1])
             except Exception:
                 pass
+    # Postcode geocode fallback via postcodes.io (only if still missing)
+    if (lat_f is None or lng_f is None):
+        pc = str(props.get("postcode") or "").strip()
+        if pc:
+            latlng = _postcode_to_latlng(pc)
+            if latlng is not None:
+                lat_f, lng_f = latlng[0], latlng[1]
     row = {
         "id": str(props.get("name", "")),
         "authority": str(props.get("area_name", props.get("authority", props.get("auth", "")))),
