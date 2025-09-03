@@ -23,7 +23,11 @@ def make_session() -> requests.Session:
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/124.0.0.0 Safari/537.36"
-            )
+            ),
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+            "Referer": "https://www.planit.org.uk/",
+            "Connection": "keep-alive",
         }
     )
     return session

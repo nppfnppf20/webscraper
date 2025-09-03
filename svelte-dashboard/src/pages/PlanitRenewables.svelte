@@ -27,11 +27,17 @@
       <tr>
         <th>Authority</th>
         <th>Title</th>
+        <th>Address</th>
+        <th>Postcode</th>
         <th>Start Date</th>
         <th>Type</th>
         <th>Size</th>
         <th>Status</th>
+        <th>Status Class</th>
         <th>Decision</th>
+        <th>Site Area (ha)</th>
+        <th>Lat</th>
+        <th>Lng</th>
         <th>Link</th>
       </tr>
     </thead>
@@ -40,11 +46,17 @@
         <tr>
           <td>{r.authority}</td>
           <td title={r.description}>{r.title}</td>
+          <td>{r.address}</td>
+          <td>{r.postcode}</td>
           <td>{r.start_date}</td>
           <td>{r.app_type}</td>
           <td>{r.app_size}</td>
           <td>{r.app_state}</td>
+          <td>{r.status_class}</td>
           <td>{r.decision}</td>
+          <td>{r.site_area_ha}</td>
+          <td>{r.lat}</td>
+          <td>{r.lng}</td>
           <td>{#if r.link}<a href={r.link} target="_blank" rel="noreferrer">open</a>{/if}</td>
         </tr>
       {/each}

@@ -5,8 +5,13 @@
   let rows = [];
   let loading = true;
   let error = '';
+  let refreshing = false;
+  let refreshMsg = '';
+  let errorMsg = '';
 
-  onMount(async () => {
+  async function loadData() {
+    loading = true;
+    error = '';
     try {
       rows = await fetchPlanitDatacentres();
     } catch (e) {
@@ -14,8 +19,41 @@
     } finally {
       loading = false;
     }
-  });
+  }
+
+  async function refreshPlanit() {
+    refreshing = true;
+    refreshMsg = '';
+    errorMsg = '';
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/refresh/planit-dc', { method: 'POST' });
+      if (!res.ok) throw new Error(`Refresh failed: ${res.status}`);
+      const body = await res.json();
+      if (body?.ok) {
+        refreshMsg = `Updated ${body.updated} rows in ${body.elapsed_s}s`;
+      } else if (body?.error === 'already_running') {
+        refreshMsg = 'Already running, try again shortly';
+      } else {
+        refreshMsg = body?.status || 'Triggered';
+      }
+      await loadData();
+    } catch (e) {
+      errorMsg = e?.message || 'Failed to refresh';
+    } finally {
+      refreshing = false;
+    }
+  }
+
+  onMount(loadData);
 </script>
+
+<div class="toolbar" style="margin: 0 0 12px 0; display: flex; gap: 8px; align-items: center;">
+  <button on:click={refreshPlanit} disabled={refreshing || loading}>
+    {refreshing ? 'Refreshing…' : 'Refresh'}
+  </button>
+  {#if refreshMsg}<span style="color: #2d7;">{refreshMsg}</span>{/if}
+  {#if errorMsg}<span style="color: #c33;">{errorMsg}</span>{/if}
+</div>
 
 {#if loading}
   <p>Loading…</p>
