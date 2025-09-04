@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import re
 import time
 from datetime import date, timedelta
@@ -11,12 +10,17 @@ from .session import make_session
 import requests
 
 
+class RateLimitExceeded(Exception):
+    """Exception raised when API rate limit is exceeded and we should stop gracefully"""
+    def __init__(self, retry_after_seconds: int):
+        self.retry_after_seconds = retry_after_seconds
+        super().__init__(f"Rate limit exceeded. Retry after {retry_after_seconds} seconds.")
+
+
 PLANIT_BASE = "https://www.planit.org.uk"
-# Narrow to Solar/BESS only and exclude domestic/roof-scale installs
-SEARCH_TERMS = (
-    '"solar" or "solar farm" or photovoltaic or "battery energy storage" or bess -roof -domestic -householder'
-)
-PAGE_SIZE = 300
+# Simplified search terms to avoid 400 errors
+SEARCH_TERMS = "solar or photovoltaic or battery"
+PAGE_SIZE = 100
 _POSTCODE_CACHE: Dict[str, Tuple[float, float]] = {}
 
 
@@ -47,6 +51,7 @@ def fetch_page(session, start: date, end: date, page: int) -> Dict:
     today = date.today()
     if end > today:
         end = today
+    # Use default fields to avoid column errors
     params = {
         "start_date": start.isoformat(),
         "end_date": end.isoformat(),
@@ -56,15 +61,36 @@ def fetch_page(session, start: date, end: date, page: int) -> Dict:
         "search": SEARCH_TERMS,
     }
     url = f"{PLANIT_BASE}/api/applics/json?{urlencode(params)}"
-    print(f"[PlanIt] GET {start}..{end} page={page}", flush=True)
-    resp = session.get(url, timeout=30)
-    if resp.status_code == 429:
-        retry_after = int(resp.headers.get("Retry-After", "2"))
-        print(f"[PlanIt] 429 rate limited. Sleeping {retry_after}s", flush=True)
-        time.sleep(retry_after)
+    print(f"[PlanIt] GET {start}..{end} page={page} - Starting request...", flush=True)
+    req_start = time.time()
+    # Manual short backoff loop for 429, up to a few quick retries
+    attempts = 0
+    while True:
+        print(f"[PlanIt] Sending HTTP GET (attempt {attempts + 1})...", flush=True)
         resp = session.get(url, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
+        req_time = time.time() - req_start
+        print(f"[PlanIt] HTTP response: {resp.status_code} in {req_time:.2f}s", flush=True)
+        if resp.status_code != 429:
+            break
+        # On first 429, check timer and exit gracefully
+        retry_after = int(resp.headers.get("Retry-After", "60"))
+        print(f"[PlanIt] 429 rate limited. Server wants {retry_after}s wait time.", flush=True)
+        print(f"[PlanIt] Exiting gracefully. Restart scraper after {retry_after} seconds.", flush=True)
+        raise RateLimitExceeded(retry_after)
+    print(f"[PlanIt] Parsing JSON response...", flush=True)
+    json_start = time.time()
+    try:
+        data = resp.json()
+        json_time = time.time() - json_start
+        total_time = time.time() - req_start
+        records_count = len(data.get("records", []))
+        print(f"[PlanIt] Parsed {records_count} records in {json_time:.2f}s (total: {total_time:.2f}s)", flush=True)
+        resp.raise_for_status()
+        return data
+    except Exception as e:
+        print(f"[PlanIt] JSON parse failed or error response: {resp.text[:500]}", flush=True)
+        resp.raise_for_status()
+        raise
 
 
 def _postcode_to_latlng(postcode: str) -> Optional[Tuple[float, float]]:
@@ -155,7 +181,7 @@ def _to_float(value: object) -> Optional[float]:
         return None
 
 
-def normalize(record: Dict, geometry: Optional[Dict] = None) -> Dict[str, str]:
+def normalize(record: Dict, geometry: Optional[Dict] = None, *, enable_geocode: bool = True) -> Dict[str, str]:
     props = record
     other = props.get("other_fields") or {}
     desc = str(props.get("description", ""))
@@ -170,18 +196,9 @@ def normalize(record: Dict, geometry: Optional[Dict] = None) -> Dict[str, str]:
     lng_val = props.get("lng", props.get("longitude", ""))
     lat_f = _to_float(lat_val)
     lng_f = _to_float(lng_val)
-    if (lat_f is None or lng_f is None) and isinstance(geometry, dict):
-        gtype = geometry.get("type")
-        coords = geometry.get("coordinates")
-        if gtype == "Point" and isinstance(coords, (list, tuple)) and len(coords) >= 2:
-            # GeoJSON: [lng, lat]
-            try:
-                lng_f = _to_float(coords[0])
-                lat_f = _to_float(coords[1])
-            except Exception:
-                pass
+    # Skip GeoJSON fallback entirely for speed
     # Postcode geocode fallback via postcodes.io (only if still missing)
-    if (lat_f is None or lng_f is None):
+    if enable_geocode and (lat_f is None or lng_f is None):
         pc = str(props.get("postcode") or "").strip()
         if pc:
             latlng = _postcode_to_latlng(pc)
@@ -210,18 +227,10 @@ def normalize(record: Dict, geometry: Optional[Dict] = None) -> Dict[str, str]:
     if site_area_ha is not None:
         row["site_area_ha"] = f"{site_area_ha}"
     row["status_class"] = _classify_status(decision_val, app_state_val)
-    if isinstance(geometry, dict):
-        gtype = geometry.get("type")
-        if gtype:
-            row["geometry_type"] = str(gtype)
-        try:
-            row["geometry_geojson"] = json.dumps(geometry, separators=(",", ":"))
-        except Exception:
-            pass
     return row
 
 
-def fetch_all_major_renewables_last_n_years(years: int = 2) -> List[Dict[str, str]]:
+def fetch_all_major_renewables_last_n_years(years: int = 2, *, enable_geocode: bool = True) -> List[Dict[str, str]]:
     session = make_session()
     ranges = month_range_backwards(years * 12)
     seen: Dict[str, Dict[str, str]] = {}
@@ -238,7 +247,7 @@ def fetch_all_major_renewables_last_n_years(years: int = 2) -> List[Dict[str, st
             for rec in records:
                 props = rec["properties"] if isinstance(rec, dict) and "properties" in rec else rec
                 geom = rec.get("geometry") if isinstance(rec, dict) else None
-                row = normalize(props, geometry=geom)
+                row = normalize(props, geometry=geom, enable_geocode=enable_geocode)
                 # size filter: include only Large / Very Large when present
                 size_val = (row.get("app_size") or "").strip().lower()
                 if size_val and size_val not in {"large", "very large"}:
@@ -266,11 +275,18 @@ def fetch_all_major_renewables_last_n_years(years: int = 2) -> List[Dict[str, st
             page += 1
             time.sleep(0.5)
         print(f"[PlanIt] Completed {start}..{end}. Cumulative distinct records: {len(seen)}", flush=True)
+        # Save incremental progress after each month
+        if len(seen) > 0:
+            from .io import save_csv
+            from pathlib import Path
+            temp_path = Path(__file__).parent.parent.parent / "planit_renewables_incremental.csv"
+            save_csv(temp_path, list(seen.values()))
+            print(f"[PlanIt] Saved incremental progress: {len(seen)} records to {temp_path.name}", flush=True)
         time.sleep(0.5)
     return list(seen.values())
 
 
-def fetch_all_major_renewables_last_n_months(months: int = 1) -> List[Dict[str, str]]:
+def fetch_all_major_renewables_last_n_months(months: int = 1, *, enable_geocode: bool = True) -> List[Dict[str, str]]:
     session = make_session()
     ranges = month_range_backwards(months)
     seen: Dict[str, Dict[str, str]] = {}
@@ -287,7 +303,7 @@ def fetch_all_major_renewables_last_n_months(months: int = 1) -> List[Dict[str, 
             for rec in records:
                 props = rec["properties"] if isinstance(rec, dict) and "properties" in rec else rec
                 geom = rec.get("geometry") if isinstance(rec, dict) else None
-                row = normalize(props, geometry=geom)
+                row = normalize(props, geometry=geom, enable_geocode=enable_geocode)
                 size_val = (row.get("app_size") or "").strip().lower()
                 if size_val and size_val not in {"large", "very large"}:
                     continue
@@ -312,6 +328,13 @@ def fetch_all_major_renewables_last_n_months(months: int = 1) -> List[Dict[str, 
             page += 1
             time.sleep(0.5)
         print(f"[PlanIt] Completed {start}..{end}. Cumulative distinct records: {len(seen)}", flush=True)
+        # Save incremental progress after each month
+        if len(seen) > 0:
+            from .io import save_csv
+            from pathlib import Path
+            temp_path = Path(__file__).parent.parent.parent / "planit_renewables_incremental.csv"
+            save_csv(temp_path, list(seen.values()))
+            print(f"[PlanIt] Saved incremental progress: {len(seen)} records to {temp_path.name}", flush=True)
         time.sleep(0.5)
     return list(seen.values())
 
@@ -331,7 +354,7 @@ def _last_complete_month_range() -> Tuple[date, date]:
     return start, end
 
 
-def fetch_major_renewables_last_complete_month() -> List[Dict[str, str]]:
+def fetch_major_renewables_last_complete_month(*, enable_geocode: bool = True) -> List[Dict[str, str]]:
     session = make_session()
     start, end = _last_complete_month_range()
     seen: Dict[str, Dict[str, str]] = {}
@@ -347,7 +370,7 @@ def fetch_major_renewables_last_complete_month() -> List[Dict[str, str]]:
         for rec in records:
             props = rec["properties"] if isinstance(rec, dict) and "properties" in rec else rec
             geom = rec.get("geometry") if isinstance(rec, dict) else None
-            row = normalize(props, geometry=geom)
+            row = normalize(props, geometry=geom, enable_geocode=enable_geocode)
             size_val = (row.get("app_size") or "").strip().lower()
             if size_val and size_val not in {"large", "very large"}:
                 continue

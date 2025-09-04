@@ -10,7 +10,8 @@ def make_session() -> requests.Session:
     retries = Retry(
         total=3,
         backoff_factor=1.0,
-        status_forcelist=[429, 500, 502, 503, 504],
+        # Exclude 429 to avoid long automatic sleeps; we handle it manually
+        status_forcelist=[500, 502, 503, 504],
         allowed_methods=["GET"],
         raise_on_status=False,
     )
