@@ -78,20 +78,36 @@ def get_planit_renewables():
     return jsonify(read_csv_to_list_of_dicts(filepath))
 
 
+@app.route("/api/planit/renewables-test2")
+def get_planit_renewables_test2():
+    filepath = DATA_DIR / "planit_renewables_test2.csv"
+    return jsonify(read_csv_to_list_of_dicts(filepath))
+
+
 # --- Refresh (re-scrape) endpoints ---
 _locks: dict[str, threading.Lock] = {
     k: threading.Lock() for k in [
-        "rtpi", "west-lindsey", "peeringdb-ix", "peeringdb-fac", "planit-dc", "planit-renew"
+        "rtpi", "west-lindsey", "peeringdb-ix", "peeringdb-fac", "planit-dc", "planit-renew", "planit-test2"
     ]
 }
 
 def _run_module(module_name: str) -> tuple[int, str, str]:
     """Run a python module in the current venv, capture return code, stdout+stderr combined, and elapsed seconds (as string)."""
+    print(f"[Flask] Starting scraper: {module_name}", flush=True)
     start = time.time()
-    proc = subprocess.run([sys.executable, "-m", module_name], capture_output=True, text=True)
-    elapsed = f"{time.time() - start:.2f}"
-    output = (proc.stdout or "") + (proc.stderr or "")
-    return proc.returncode, output, elapsed
+    # Change to project root directory to run modules with 60 second timeout
+    try:
+        proc = subprocess.run([sys.executable, "-m", module_name], capture_output=True, text=True, cwd=DATA_DIR, timeout=45)
+        elapsed = f"{time.time() - start:.2f}"
+        output = (proc.stdout or "") + (proc.stderr or "")
+        print(f"[Flask] Scraper {module_name} completed in {elapsed}s with return code {proc.returncode}", flush=True)
+        if proc.returncode != 0:
+            print(f"[Flask] Error output: {output[-500:]}", flush=True)  # Show last 500 chars of error
+        return proc.returncode, output, elapsed
+    except subprocess.TimeoutExpired:
+        elapsed = f"{time.time() - start:.2f}"
+        print(f"[Flask] Scraper {module_name} TIMED OUT after {elapsed}s", flush=True)
+        return 124, f"Process timed out after 45 seconds", elapsed
 
 def _count_rows(csv_filename: str) -> int:
     filepath = DATA_DIR / csv_filename
@@ -137,12 +153,17 @@ def refresh_peeringdb_fac():
 
 @app.post("/api/refresh/planit-dc")
 def refresh_planit_dc():
-    return _refresh("planit-dc", "backend.scraper.run_planit_datacentres", "planit_datacentres.csv")
+    return _refresh("planit-dc", "backend.scraper.run_planit_api_datacentres", "planit_datacentres.csv")
 
 
 @app.post("/api/refresh/planit-renew")
 def refresh_planit_renew():
-    return _refresh("planit-renew", "backend.scraper.run_planit_renewables", "planit_renewables.csv")
+    return _refresh("planit-renew", "backend.scraper.run_planit_renewables_daily", "planit_renewables.csv")
+
+
+@app.post("/api/refresh/planit-test2")
+def refresh_planit_test2():
+    return _refresh("planit-test2", "backend.scraper.run_planit_api_test", "planit_renewables_test2.csv")
 
 
 if __name__ == "__main__":

@@ -36,14 +36,20 @@
 </script>
 
 <div class="toolbar">
-  <button on:click={refreshNow} disabled={refreshing}>{refreshing ? 'Refreshing…' : 'Refresh'}</button>
+  <button class="button-primary" on:click={refreshNow} disabled={refreshing}>
+    {#if refreshing}<span class="loading-spinner"></span>{/if}
+    {refreshing ? 'Refreshing…' : 'Refresh'}
+  </button>
   {#if msg}<span class="msg">{msg}</span>{/if}
 </div>
 
 {#if loading}
-  <p>Loading events…</p>
+  <div class="text-center p-4">
+    <span class="loading-spinner"></span>
+    <p class="mt-2">Loading events…</p>
+  </div>
 {:else if error}
-  <p style="color:red">{error}</p>
+  <div class="alert alert-danger">{error}</div>
 {:else}
   <table>
     <thead>
@@ -70,14 +76,15 @@
 {/if}
 
 <style>
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border: 1px solid #ddd; padding: 8px; }
-  th { background: #f5f5f5; text-align: left; }
-  a { color: #0d6efd; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  p { margin: 1rem 0; }
-  .toolbar { display:flex; align-items:center; gap:12px; margin: 8px 0; }
-  .msg { color:#555; font-size: 0.9rem; }
-  
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+  }
+  .msg {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+  }
 </style>
 

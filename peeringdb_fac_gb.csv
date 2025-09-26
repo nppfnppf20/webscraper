@@ -102,9 +102,8 @@ id,name,address,city,country,postal_code
 2384,aql DC5,"Canon House, Apex Way",Leeds,GB,
 2417,brightsolid Aberdeen Data Centre,Lang Stracht,Aberdeen,GB,AB15 6DF
 2429,"Ark Data Centres - Spring Park - SQ17, P1, P2, P3, P4, P5",Westwells Road,Corsham,GB,SN13 9GB
-2627,Cyxtera London (LHR1),630 Ajax Ave.,Slough,GB,SL1 4DG
-2628,Cyxtera London (LHR2),7 Greenwich View Pl,London,GB,E14
-2631,Cyxtera London (LHR3),Eskdale Road,Wokingham,GB,RG41 5TS
+2628,Centersquare London (LHR2),7 Greenwich View Pl,London,GB,E14
+2631,Centersquare London (LHR3),Eskdale Road,Wokingham,GB,RG41 5TS
 2682,Custodian CDC Maidstone 1,Custodian DataCentres,Maidstone,GB,ME14 5NZ
 2683,CSD Network Services Ltd,10 New Road,Braintree,GB,CM77 6TG
 2807,DC01 -Baltic Creative,49 Jamaica St,Liverpool,GB,L1 0AH
@@ -240,7 +239,7 @@ id,name,address,city,country,postal_code
 15214,Ada Infrastructure (Docklands),North Woolrich Rd,London,GB,E16 2BY
 15328,Grid Hosting Limited,"Suite No 18-19, Parker House",Derby,GB,DE214SZ
 15752,Tarisu Limited,"71-75 Shelton Street, Covent Garden",London,GB,WC2H 9JQ
-15769,Exascale - Wolverhampton (WLV0),Exascale,Wolverhampton,GB,WV10 9TJ
+15769,Exascale - Wolverhampton (WLV0),Exascale,Wolverhampton,GB,WV10 6HH
 15781,Fast2host - Fast4networks Ltd,The Lakes Business Park,Cambridge,GB,PE28 9ET
 16182,Blynx AIM Ltd,Saxon House,Cheteham,GB,GL526AX
 16183,Blynx AIM Ltd.,Saxon House,Cheltenham,GB,GL52 6AX

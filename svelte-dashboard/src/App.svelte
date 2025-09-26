@@ -6,6 +6,7 @@
   import PeeringdbFacilitiesGb from './pages/PeeringdbFacilitiesGb.svelte';
   import PlanitDatacentres from './pages/PlanitDatacentres.svelte';
   import PlanitRenewables from './pages/PlanitRenewables.svelte';
+  import PlanitRenewablesTest2 from './pages/PlanitRenewablesTest2.svelte';
 
   let currentPath = window.location.hash.slice(1) || '/events';
 
@@ -25,6 +26,7 @@
   <a href="#/peeringdb-fac" class:active={currentPath === '/peeringdb-fac'}>PeeringDB Facilities (GB)</a>
   <a href="#/planit-dc" class:active={currentPath === '/planit-dc'}>PlanIt Data Centres</a>
   <a href="#/planit-renew" class:active={currentPath === '/planit-renew'}>PlanIt Renewables</a>
+  <a href="#/planit-test2" class:active={currentPath === '/planit-test2'}>PlanIt Renewables Test 2</a>
   <span class="spacer"></span>
   <a href="#/events" class="brand">Web Scraper Dashboard</a>
   
@@ -43,39 +45,10 @@
     <PlanitDatacentres />
   {:else if currentPath === '/planit-renew'}
     <PlanitRenewables />
+  {:else if currentPath === '/planit-test2'}
+    <PlanitRenewablesTest2 />
   {:else}
     <p>Page not found.</p>
   {/if}
 </main>
 
-<style>
-  nav {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 10;
-  }
-  nav a {
-    text-decoration: none;
-    color: #333;
-  }
-  nav a.active {
-    font-weight: 600;
-    color: #0d6efd;
-  }
-  nav .brand {
-    margin-left: auto;
-    color: #666;
-    font-size: 0.9rem;
-  }
-  main {
-    padding: 16px;
-  }
-  .spacer { flex: 1; }
-  
-</style>
