@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import DataTable from '../components/DataTable.svelte';
 
   let renewables = [];
   let loading = true;
@@ -96,6 +97,123 @@
     if (!text) return '';
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
   }
+
+  // Column definitions for DataTable
+  const columns = [
+    {
+      key: 'name',
+      label: 'Name',
+      sortable: true,
+      width: '20%',
+      render: (value, item) => `
+        <div class="project-title" title="${value || ''}">
+          ${truncateText(value, 80)}
+        </div>
+      `
+    },
+    {
+      key: 'uid',
+      label: 'UID',
+      sortable: true,
+      width: '8%',
+      render: (value) => `<small class="uid">${value || ''}</small>`
+    },
+    {
+      key: 'description',
+      label: 'Description',
+      sortable: true,
+      width: '25%',
+      render: (value, item) => `
+        <div class="description" title="${value || ''}">
+          ${truncateText(value, 120)}
+        </div>
+      `
+    },
+    {
+      key: 'area_name',
+      label: 'Authority',
+      sortable: true,
+      width: '12%',
+      render: (value, item) => value || item.authority || ''
+    },
+    {
+      key: 'address',
+      label: 'Address',
+      sortable: true,
+      width: '15%',
+      render: (value) => `<div class="address">${value || ''}</div>`
+    },
+    {
+      key: 'postcode',
+      label: 'Postcode',
+      sortable: true,
+      width: '8%',
+      render: (value) => `<small class="postcode">${value || ''}</small>`
+    },
+    {
+      key: 'app_state',
+      label: 'Status',
+      sortable: true,
+      width: '10%',
+      render: (value, item) => {
+        const status = value || item.status || 'Unknown';
+        const statusClass = getStatusClass(status);
+        let html = `<span class="status-badge ${statusClass}">${status}</span>`;
+        if (item.decision && item.decision !== status) {
+          html += `<br><small class="decision">${item.decision}</small>`;
+        }
+        return html;
+      }
+    },
+    {
+      key: 'app_type',
+      label: 'Type',
+      sortable: true,
+      width: '8%',
+      render: (value) => value ? `<span class="app-type">${value}</span>` : ''
+    },
+    {
+      key: 'app_size',
+      label: 'Size',
+      sortable: true,
+      width: '8%',
+      render: (value) => value ? `<span class="app-size">${value}</span>` : ''
+    },
+    {
+      key: 'start_date',
+      label: 'Start Date',
+      sortable: true,
+      width: '10%',
+      render: (value) => formatDate(value)
+    },
+    {
+      key: 'decided_date',
+      label: 'Decision Date',
+      sortable: true,
+      width: '10%',
+      render: (value) => formatDate(value)
+    },
+    {
+      key: 'coordinates',
+      label: 'Coordinates',
+      sortable: false,
+      width: '12%',
+      render: (value, item) => {
+        if (item.lat && item.lng) {
+          return `<small class="coordinates">${parseFloat(item.lat).toFixed(4)}, ${parseFloat(item.lng).toFixed(4)}</small>`;
+        }
+        return '<small class="coordinates">-</small>';
+      }
+    },
+    {
+      key: 'link',
+      label: 'Link',
+      sortable: false,
+      width: '8%',
+      align: 'center',
+      render: (value) => value ? `<a href="${value}" target="_blank" rel="noreferrer" class="link-button">View</a>` : ''
+    }
+  ];
 </script>
 
 <div class="page-header">
@@ -143,95 +261,17 @@
     {/if}
   </div>
 
-  {#if renewables.length > 0}
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>UID</th>
-            <th>Description</th>
-            <th>Authority</th>
-            <th>Address</th>
-            <th>Postcode</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>Start Date</th>
-            <th>Decision Date</th>
-            <th>Coordinates</th>
-            <th>Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each renewables as project}
-            <tr>
-              <td>
-                <div class="project-title" title={project.name}>
-                  {truncateText(project.name, 80)}
-                </div>
-              </td>
-              <td>
-                <small class="uid">{project.uid || ''}</small>
-              </td>
-              <td>
-                <div class="description" title={project.description}>
-                  {truncateText(project.description, 120)}
-                </div>
-              </td>
-              <td>{project.area_name || project.authority || ''}</td>
-              <td>
-                <div class="address">
-                  {project.address || ''}
-                </div>
-              </td>
-              <td>
-                <small class="postcode">{project.postcode || ''}</small>
-              </td>
-              <td>
-                <span class="status-badge {getStatusClass(project.app_state || project.status)}">
-                  {project.app_state || project.status || 'Unknown'}
-                </span>
-                {#if project.decision && project.decision !== (project.app_state || project.status)}
-                  <br><small class="decision">{project.decision}</small>
-                {/if}
-              </td>
-              <td>
-                {#if project.app_type}
-                  <span class="app-type">{project.app_type}</span>
-                {/if}
-              </td>
-              <td>
-                {#if project.app_size}
-                  <span class="app-size">{project.app_size}</span>
-                {/if}
-              </td>
-              <td>{formatDate(project.start_date)}</td>
-              <td>{formatDate(project.decided_date)}</td>
-              <td>
-                {#if project.lat && project.lng}
-                  <small class="coordinates">
-                    {parseFloat(project.lat).toFixed(4)}, {parseFloat(project.lng).toFixed(4)}
-                  </small>
-                {:else}
-                  <small class="coordinates">-</small>
-                {/if}
-              </td>
-              <td>
-                {#if project.link}
-                  <a href={project.link} target="_blank" rel="noreferrer" class="link-button">View</a>
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  {:else}
-    <div class="alert alert-info">
-      No renewables projects found for the last 3 months. Try refreshing the data.
-    </div>
-  {/if}
+  <DataTable
+    data={renewables}
+    {columns}
+    {loading}
+    {error}
+    searchPlaceholder="Search renewables projects..."
+    emptyMessage="No renewables projects found for the last 30 days. Try refreshing the data."
+    showSearch={true}
+    showActions={false}
+    minWidth="1400px"
+  />
 {/if}
 
 <style>
@@ -294,51 +334,46 @@
     white-space: nowrap;
   }
 
-  .table-container {
-    overflow-x: auto;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-  }
-
-  .project-title {
+  /* Custom styles for DataTable content */
+  :global(.project-title) {
     font-weight: 500;
     color: var(--text-color);
     line-height: 1.3;
   }
 
-  .uid {
+  :global(.uid) {
     color: var(--dark-gray);
     font-family: monospace;
     font-size: 0.8rem;
   }
 
-  .description {
+  :global(.description) {
     font-size: 0.9rem;
     line-height: 1.3;
     color: var(--text-color);
   }
 
-  .address {
+  :global(.address) {
     font-size: 0.9rem;
   }
 
-  .postcode {
+  :global(.postcode) {
     color: var(--dark-gray);
     font-weight: 500;
   }
 
-  .decision {
+  :global(.decision) {
     color: var(--dark-gray);
     font-style: italic;
   }
 
-  .coordinates {
+  :global(.coordinates) {
     color: var(--dark-gray);
     font-family: monospace;
     font-size: 0.8rem;
   }
 
-  .app-type, .app-size {
+  :global(.app-type), :global(.app-size) {
     font-size: 0.85rem;
     padding: 0.15rem 0.4rem;
     border-radius: 3px;
@@ -348,7 +383,7 @@
     display: inline-block;
   }
 
-  .link-button {
+  :global(.link-button) {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     background-color: var(--primary-color);
@@ -359,7 +394,7 @@
     transition: background-color 0.15s ease-in-out;
   }
 
-  .link-button:hover {
+  :global(.link-button:hover) {
     background-color: #0b5ed7;
     color: white;
   }
