@@ -63,7 +63,16 @@
       // Reload data after successful refresh
       const rawData = await fetchRenewablesTest2();
       renewables = filterRenewables(rawData);
-      msg = `✅ Refreshed in ${result.elapsed_s}s, found ${renewables.length} filtered renewables projects (${result.updated} total)`;
+
+      // Count new records
+      const newCount = rawData.filter(item => item.is_new === 'true').length;
+      const newFilteredCount = renewables.filter(item => item.is_new === 'true').length;
+
+      if (newCount > 0) {
+        msg = `✅ Refreshed in ${result.elapsed_s}s! Found ${newCount} new records (${newFilteredCount} after filtering). Total: ${renewables.length} filtered projects (${result.updated} total)`;
+      } else {
+        msg = `✅ Refreshed in ${result.elapsed_s}s, no new records. Found ${renewables.length} filtered renewables projects (${result.updated} total)`;
+      }
 
     } catch (e) {
       msg = `❌ ${e.message || 'Refresh failed'}`;
@@ -105,11 +114,14 @@
       label: 'Name',
       sortable: true,
       width: '20%',
-      render: (value, item) => `
-        <div class="project-title" title="${value || ''}">
-          ${truncateText(value, 80)}
-        </div>
-      `
+      render: (value, item) => {
+        const isNew = item.is_new === 'true';
+        return `
+          <div class="project-title ${isNew ? 'new-record' : ''}" title="${value || ''}">
+            ${isNew ? '✨ ' : ''}${truncateText(value, 80)}
+          </div>
+        `;
+      }
     },
     {
       key: 'uid',
@@ -221,6 +233,36 @@
   <p>Medium/Large renewables projects (solar, photovoltaic, battery, BESS) from last 30 days using official PlanIt API - filtered to exclude conditions</p>
 </div>
 
+<div class="search-info">
+  <div class="info-section">
+    <h3>📅 Time Period</h3>
+    <span class="info-value">Last 30 days</span>
+  </div>
+
+  <div class="info-section">
+    <h3>🔍 Search Terms</h3>
+    <div class="search-terms">
+      <span class="term">"solar farm"</span>
+      <span class="term">photovoltaic</span>
+      <span class="term">"battery storage"</span>
+      <span class="term">BESS</span>
+      <span class="term">"energy storage"</span>
+      <span class="term">"wind turbine"</span>
+      <span class="term">windfarm</span>
+      <span class="term">hydro</span>
+      <span class="term">"anaerobic digestion"</span>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>⚡ Filters Applied</h3>
+    <div class="filters">
+      <span class="filter">Size: Medium or Large only</span>
+      <span class="filter">Excludes: Conditions and discharge applications</span>
+    </div>
+  </div>
+</div>
+
 <div class="toolbar">
   <button class="button-primary" on:click={refreshNow} disabled={refreshing}>
     {#if refreshing}<span class="loading-spinner"></span>{/if}
@@ -290,6 +332,70 @@
     margin: 0;
   }
 
+  .search-info {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+  }
+
+  .info-section h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-value {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .search-terms, .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .term {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid #bbdefb;
+  }
+
+  .filter {
+    background: #fff3e0;
+    color: #ef6c00;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid #ffcc02;
+  }
+
+  @media (max-width: 768px) {
+    .search-info {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
   .toolbar {
     display: flex;
     align-items: center;
@@ -339,6 +445,15 @@
     font-weight: 500;
     color: var(--text-color);
     line-height: 1.3;
+  }
+
+  :global(.project-title.new-record) {
+    background: linear-gradient(90deg, #fff3cd 0%, #fff8e1 100%);
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    border-left: 3px solid #ffc107;
+    font-weight: 600;
+    color: #856404;
   }
 
   :global(.uid) {

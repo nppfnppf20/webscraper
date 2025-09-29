@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, afterUpdate } from 'svelte';
 
   // Props for table configuration
   export let data = [];
@@ -31,6 +31,10 @@
   let sortKey = '';
   let sortDirection = 'asc';
   let displayData = [];
+
+  // Scrollbar synchronization
+  let topScrollContainer;
+  let tableContainer;
 
   const dispatch = createEventDispatcher();
 
@@ -102,6 +106,45 @@
   function handleRetry() {
     dispatch('retry');
   }
+
+  // Scroll synchronization
+  let isScrolling = false;
+
+  function syncTopScroll() {
+    if (tableContainer && topScrollContainer && !isScrolling) {
+      isScrolling = true;
+      tableContainer.scrollLeft = topScrollContainer.scrollLeft;
+      setTimeout(() => { isScrolling = false; }, 10);
+    }
+  }
+
+  function syncTableScroll() {
+    if (tableContainer && topScrollContainer && !isScrolling) {
+      isScrolling = true;
+      topScrollContainer.scrollLeft = tableContainer.scrollLeft;
+      setTimeout(() => { isScrolling = false; }, 10);
+    }
+  }
+
+  // Update top scrollbar width to match table's actual scrollable width
+  function updateTopScrollbarWidth() {
+    if (tableContainer && topScrollContainer) {
+      const tableScrollWidth = tableContainer.scrollWidth;
+      const topScrollContent = topScrollContainer.querySelector('.top-scrollbar-content');
+      if (topScrollContent) {
+        topScrollContent.style.width = `${tableScrollWidth}px`;
+      }
+    }
+  }
+
+  // Update scrollbar width when component mounts or data changes
+  onMount(() => {
+    setTimeout(updateTopScrollbarWidth, 100);
+  });
+
+  afterUpdate(() => {
+    setTimeout(updateTopScrollbarWidth, 100);
+  });
 </script>
 
 <div class="data-table-container">
@@ -137,7 +180,12 @@
         <p>{emptyMessage}</p>
       </div>
     {:else}
-      <div class="table-container">
+      <!-- Top scrollbar -->
+      <div class="top-scrollbar-container" bind:this={topScrollContainer} on:scroll={syncTopScroll}>
+        <div class="top-scrollbar-content"></div>
+      </div>
+
+      <div class="table-container" bind:this={tableContainer} on:scroll={syncTableScroll}>
         <table class="data-table" style="min-width: {minWidth}">
           <thead>
             <!-- Main headers row -->
@@ -328,13 +376,85 @@
 
   .table-container {
     overflow-x: auto;
+    overflow-y: hidden;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-top: none;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
     background: white;
     contain: layout style paint;
     will-change: scroll-position;
     transform: translateZ(0);
     overflow-anchor: auto;
+    /* Enhanced scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+  }
+
+  /* WebKit scrollbar styling for better visibility */
+  .table-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .table-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .table-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .table-container::-webkit-scrollbar-thumb:active {
+    background: #64748b;
+  }
+
+  /* Top scrollbar styling */
+  .top-scrollbar-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    background: #f8f9fa;
+    height: 20px;
+    /* Enhanced scrollbar styling - same as table container */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+  }
+
+  /* Top scrollbar WebKit styling */
+  .top-scrollbar-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .top-scrollbar-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  .top-scrollbar-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .top-scrollbar-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .top-scrollbar-container::-webkit-scrollbar-thumb:active {
+    background: #64748b;
+  }
+
+  .top-scrollbar-content {
+    height: 1px;
+    background: transparent;
   }
 
   .data-table {
