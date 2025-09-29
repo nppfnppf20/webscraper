@@ -5,6 +5,9 @@
   let error = '';
   let refreshing = false;
   let refreshStatus = '';
+  let autoRefreshEnabled = true;
+  let lastRefreshTime = '';
+  let nextAutoRefresh = '';
   let overview = {
     cpd: {},
     consultations: {},
@@ -121,12 +124,65 @@
       .slice(0, limit);
   }
 
+  // Auto-refresh management
+  const REFRESH_STORAGE_KEY = 'dashboard_last_refresh';
+  const REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  function getLastRefreshTime() {
+    try {
+      const stored = localStorage.getItem(REFRESH_STORAGE_KEY);
+      return stored ? parseInt(stored) : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  function setLastRefreshTime() {
+    try {
+      localStorage.setItem(REFRESH_STORAGE_KEY, Date.now().toString());
+      updateRefreshDisplays();
+    } catch {
+      // localStorage not available
+    }
+  }
+
+  function updateRefreshDisplays() {
+    const lastRefresh = getLastRefreshTime();
+    if (lastRefresh) {
+      const lastRefreshDate = new Date(lastRefresh);
+      const nextRefreshDate = new Date(lastRefresh + REFRESH_INTERVAL);
+
+      lastRefreshTime = lastRefreshDate.toLocaleString();
+      nextAutoRefresh = nextRefreshDate.toLocaleString();
+    } else {
+      lastRefreshTime = 'Never';
+      nextAutoRefresh = 'Not scheduled';
+    }
+  }
+
+  function shouldAutoRefresh() {
+    if (!autoRefreshEnabled) return false;
+    const lastRefresh = getLastRefreshTime();
+    const now = Date.now();
+    return now - lastRefresh >= REFRESH_INTERVAL;
+  }
+
+  function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    if (!autoRefreshEnabled) {
+      nextAutoRefresh = 'Disabled';
+      lastRefreshTime = lastRefreshTime; // Keep last refresh time
+    } else {
+      updateRefreshDisplays();
+    }
+  }
+
   // Global refresh function
-  async function refreshAll() {
+  async function refreshAll(isAutoRefresh = false) {
     if (refreshing) return;
 
     refreshing = true;
-    refreshStatus = 'Starting global refresh...';
+    refreshStatus = isAutoRefresh ? 'Starting automatic daily refresh...' : 'Starting global refresh...';
 
     const refreshEndpoints = [
       { name: 'RTPI Events', endpoint: '/api/refresh/rtpi' },
@@ -166,8 +222,12 @@
       refreshStatus = 'Reloading dashboard data...';
       await loadData();
 
-      refreshStatus = `✅ Refresh complete! ${successCount} successful, ${failCount} failed`;
-      setTimeout(() => { refreshStatus = ''; }, 5000);
+      // Update last refresh time
+      setLastRefreshTime();
+
+      const prefix = isAutoRefresh ? '🔄 Auto-refresh' : '✅ Refresh';
+      refreshStatus = `${prefix} complete! ${successCount} successful, ${failCount} failed`;
+      setTimeout(() => { refreshStatus = ''; }, 8000);
 
     } catch (e) {
       refreshStatus = `❌ Refresh failed: ${e.message}`;
@@ -269,6 +329,27 @@
   onMount(async () => {
     try {
       await loadData();
+
+      // Initialize auto-refresh displays
+      updateRefreshDisplays();
+
+      // Check if we need to auto-refresh on page load
+      if (shouldAutoRefresh()) {
+        console.log('Auto-refresh needed, starting refresh...');
+        setTimeout(() => refreshAll(true), 2000); // Small delay to let UI load
+      }
+
+      // Set up periodic check for auto-refresh (every hour)
+      const autoRefreshInterval = setInterval(() => {
+        if (shouldAutoRefresh()) {
+          console.log('Daily auto-refresh triggered');
+          refreshAll(true);
+        }
+      }, 60 * 60 * 1000); // Check every hour
+
+      // Cleanup interval on component destroy
+      return () => clearInterval(autoRefreshInterval);
+
     } catch (e) {
       error = e?.message || 'Failed to load overview data';
     } finally {
@@ -284,10 +365,33 @@
       <p>Recent updates and activity across all monitoring systems</p>
     </div>
     <div class="header-actions">
-      <button class="button-primary" on:click={refreshAll} disabled={refreshing}>
-        {#if refreshing}<span class="loading-spinner"></span>{/if}
-        {refreshing ? 'Refreshing...' : 'Refresh All'}
-      </button>
+      <div class="auto-refresh-info">
+        <div class="auto-refresh-status">
+          <span class="status-label">Auto-refresh:</span>
+          <span class="status-value {autoRefreshEnabled ? 'enabled' : 'disabled'}">
+            {autoRefreshEnabled ? 'Enabled' : 'Disabled'}
+          </span>
+        </div>
+        <div class="last-refresh">
+          <span class="last-label">Last:</span>
+          <span class="last-time">{lastRefreshTime}</span>
+        </div>
+        {#if autoRefreshEnabled}
+          <div class="next-refresh">
+            <span class="next-label">Next:</span>
+            <span class="next-time">{nextAutoRefresh}</span>
+          </div>
+        {/if}
+      </div>
+      <div class="button-group">
+        <button class="button-secondary" on:click={toggleAutoRefresh}>
+          {autoRefreshEnabled ? 'Disable Auto' : 'Enable Auto'}
+        </button>
+        <button class="button-primary" on:click={() => refreshAll(false)} disabled={refreshing}>
+          {#if refreshing}<span class="loading-spinner"></span>{/if}
+          {refreshing ? 'Refreshing...' : 'Refresh Now'}
+        </button>
+      </div>
     </div>
   </div>
   {#if refreshStatus}
@@ -303,47 +407,6 @@
 {:else if error}
   <div class="alert alert-danger">{error}</div>
 {:else}
-
-  <!-- CPD/BD Section -->
-  <div class="category-section">
-    <h2 class="category-title">CPD/BD</h2>
-
-    <div class="overview-cards">
-      <div class="overview-card">
-        <h3>
-          <a href="#/events">RTPI Events</a>
-        </h3>
-        <p class="last-updated">{overview.cpd.rtpiEvents.lastUpdated}</p>
-
-        <div class="time-stats">
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.todayCount || 0}</span>
-            <span class="time-label">Today</span>
-          </div>
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.sevenDayCount || 0}</span>
-            <span class="time-label">7 Days</span>
-          </div>
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.thirtyDayCount || 0}</span>
-            <span class="time-label">30 Days</span>
-          </div>
-        </div>
-
-        {#if overview.cpd.rtpiEvents.recent.length > 0}
-          <div class="recent-items">
-            <h4>Recent Events:</h4>
-            {#each overview.cpd.rtpiEvents.recent as event}
-              <div class="recent-item">
-                <div class="item-title">{event.title || event.name || 'Untitled Event'}</div>
-                <div class="item-date">{formatDate(event.date)}</div>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
 
   <!-- TRP Consultation Trackers Section -->
   <div class="category-section">
@@ -505,6 +568,47 @@
     </div>
   </div>
 
+  <!-- CPD/BD Section -->
+  <div class="category-section">
+    <h2 class="category-title">CPD/BD</h2>
+
+    <div class="overview-cards">
+      <div class="overview-card">
+        <h3>
+          <a href="#/events">RTPI Events</a>
+        </h3>
+        <p class="last-updated">{overview.cpd.rtpiEvents.lastUpdated}</p>
+
+        <div class="time-stats">
+          <div class="time-stat">
+            <span class="time-count">{overview.cpd.rtpiEvents.todayCount || 0}</span>
+            <span class="time-label">Today</span>
+          </div>
+          <div class="time-stat">
+            <span class="time-count">{overview.cpd.rtpiEvents.sevenDayCount || 0}</span>
+            <span class="time-label">7 Days</span>
+          </div>
+          <div class="time-stat">
+            <span class="time-count">{overview.cpd.rtpiEvents.thirtyDayCount || 0}</span>
+            <span class="time-label">30 Days</span>
+          </div>
+        </div>
+
+        {#if overview.cpd.rtpiEvents.recent.length > 0}
+          <div class="recent-items">
+            <h4>Recent Events:</h4>
+            {#each overview.cpd.rtpiEvents.recent as event}
+              <div class="recent-item">
+                <div class="item-title">{event.title || event.name || 'Untitled Event'}</div>
+                <div class="item-date">{formatDate(event.date)}</div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+
 {/if}
 
 <style>
@@ -533,6 +637,44 @@
 
   .header-actions {
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .auto-refresh-info {
+    text-align: right;
+    font-size: 0.85rem;
+  }
+
+  .auto-refresh-status, .last-refresh, .next-refresh {
+    margin-bottom: 0.25rem;
+  }
+
+  .status-label, .last-label, .next-label {
+    color: var(--dark-gray);
+    font-weight: 500;
+  }
+
+  .status-value.enabled {
+    color: #28a745;
+    font-weight: 600;
+  }
+
+  .status-value.disabled {
+    color: #dc3545;
+    font-weight: 600;
+  }
+
+  .last-time, .next-time {
+    color: var(--text-color);
+    font-weight: 500;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 0.75rem;
   }
 
   .button-primary {
@@ -557,6 +699,25 @@
   .button-primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  .button-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+  }
+
+  .button-secondary:hover {
+    background: var(--light-gray);
   }
 
   .loading-spinner {
@@ -714,6 +875,20 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 1rem;
+    }
+
+    .header-actions {
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .auto-refresh-info {
+      text-align: left;
+    }
+
+    .button-group {
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
     .overview-cards {
