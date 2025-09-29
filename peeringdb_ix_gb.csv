@@ -1,26 +1,26 @@
 id,name,country,city,networks
-18,LINX LON1,GB,London,832
-53,LONAP,GB,London,291
-321,LINX LON2,GB,London,311
-435,IXLeeds,GB,Leeds / Western Yorkshire,21
+18,LINX LON1,GB,London,831
+53,LONAP,GB,London,293
+321,LINX LON2,GB,London,313
+435,IXLeeds,GB,Leeds / Western Yorkshire,20
 583,LINX Manchester,GB,Manchester,136
 745,LINX Scotland,GB,Scotland,36
 985,BDX BTN1,GB,Brighton,0
 1016,LINX Wales,GB,Cardiff,11
 1302,IX Liverpool - MICT,GB,Liverpool,3
-1927,Equinix Manchester,GB,Manchester,22
-1997,Equinix London,GB,London,58
+1927,Equinix Manchester,GB,Manchester,23
+1997,Equinix London,GB,London,55
 2704,IXP UK LON,GB,London,22
 2801,LONAP Multicast,GB,London,0
 2955,IX Liverpool - Baltic Bubble,GB,Liverpool,3
 2956,IX Liverpool Internet of Things LAN,GB,Liverpool,0
 2957,IX Liverpool GRX Peering Exchange (5G),GB,Liverpool,0
-3098,BFD-IX,GB,Bradford,35
+3098,BFD-IX,GB,Bradford,34
 3189,BBIX London,GB,London,3
 3278,IXBradford,GB,Bradford,10
 3373,NCL-IX,GB,Newcastle,6
 3732,RapidIX LON1,GB,London,14
-3821,BGP.Exchange - London,GB,London,34
+3821,BGP.Exchange - London,GB,London,41
 3877,SBIX London,GB,London,1
 4040,Edge IX Birmingham,GB,Birmingham,1
 4073,BGPHaus,GB,London,1
