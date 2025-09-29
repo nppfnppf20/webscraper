@@ -103,7 +103,7 @@
   <!-- Consultations Section -->
   <div class="consultations-section">
     <div class="section-header">
-      <h2>💬 Consultation Responses</h2>
+      <h2>Consultation Responses</h2>
       <div class="consultation-count">{consultations.length} responses</div>
     </div>
 
