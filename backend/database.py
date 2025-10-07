@@ -87,8 +87,19 @@ class SupabaseDB:
         return results[0] if results else {}
 
     def get_west_lindsey_consultations(self) -> List[Dict[str, Any]]:
-        """Get West Lindsey consultations"""
-        return self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY created_at DESC")
+        """Get West Lindsey consultations with frontend-compatible field names"""
+        results = self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY created_at DESC")
+
+        # Map database fields back to original CSV field names that frontend expects
+        for item in results:
+            item['consulteeName'] = item.get('title', '')
+            item['opinion'] = item.get('status', '')
+            item['responseDetailsToPublish'] = item.get('description', '')
+            item['responsePublished'] = '1' if item.get('description') else '0'  # Fake this field
+            item['createdTime'] = item.get('created_at', '')
+            item['lastModifiedTime'] = item.get('updated_at', '')
+
+        return results
 
     def get_peeringdb_ix_gb(self) -> List[Dict[str, Any]]:
         """Get PeeringDB Internet Exchanges (GB)"""
@@ -99,17 +110,43 @@ class SupabaseDB:
         return self.execute_query("SELECT * FROM peeringdb_fac_gb ORDER BY name")
 
     def get_planit_datacentres(self) -> List[Dict[str, Any]]:
-        """Get PlanIt data centres"""
-        return self.execute_query("SELECT * FROM planit_datacentres ORDER BY last_scraped DESC NULLS LAST")
+        """Get PlanIt data centres with field mapping for frontend compatibility"""
+        results = self.execute_query("SELECT * FROM planit_datacentres ORDER BY last_scraped DESC NULLS LAST")
+
+        # Map database fields to frontend expected fields
+        for item in results:
+            # Add frontend-compatible field names
+            item['lat'] = item.get('latitude')
+            item['lng'] = item.get('longitude')
+            item['link'] = item.get('url')
+
+        return results
 
     def get_planit_renewables(self) -> List[Dict[str, Any]]:
-        """Get PlanIt renewables"""
-        return self.execute_query("SELECT * FROM planit_renewables ORDER BY last_scraped DESC NULLS LAST")
+        """Get PlanIt renewables with field mapping for frontend compatibility"""
+        results = self.execute_query("SELECT * FROM planit_renewables ORDER BY last_scraped DESC NULLS LAST")
+
+        # Map database fields to frontend expected fields
+        for item in results:
+            # Add frontend-compatible field names
+            item['lat'] = item.get('latitude')
+            item['lng'] = item.get('longitude')
+            item['link'] = item.get('url')
+
+        return results
 
     def get_planit_renewables_test2(self) -> List[Dict[str, Any]]:
-        """Get PlanIt renewables test data - this will use the main renewables table with filter if needed"""
-        # For now, return same as main renewables - you can add filtering logic here
-        return self.get_planit_renewables()
+        """Get PlanIt renewables test data with field mapping for frontend compatibility"""
+        results = self.execute_query("SELECT * FROM planit_renewables ORDER BY last_scraped DESC NULLS LAST")
+
+        # Map database fields to frontend expected fields
+        for item in results:
+            # Add frontend-compatible field names
+            item['lat'] = item.get('latitude')
+            item['lng'] = item.get('longitude')
+            item['link'] = item.get('url')
+
+        return results
 
 # Global database instance
 db = SupabaseDB()
