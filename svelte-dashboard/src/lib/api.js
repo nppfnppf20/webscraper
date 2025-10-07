@@ -1,4 +1,14 @@
-const API_BASE = 'http://127.0.0.1:8000/api';
+// Determine API base URL based on environment
+const getApiBase = () => {
+  // In production (Render), use the backend service URL
+  if (import.meta.env.PROD) {
+    return 'https://web-scraper-api.onrender.com/api';
+  }
+  // In development, use localhost
+  return 'http://127.0.0.1:8000/api';
+};
+
+const API_BASE = getApiBase();
 
 export async function fetchRtpiEvents() {
   const res = await fetch(`${API_BASE}/rtpi/events`);
@@ -41,4 +51,20 @@ export async function fetchPlanitRenewables() {
   if (!res.ok) throw new Error('Failed to fetch PlanIt renewables');
   return res.json();
 }
+
+export async function fetchPlanitRenewablesTest2() {
+  const res = await fetch(`${API_BASE}/planit/renewables-test2`);
+  if (!res.ok) throw new Error('Failed to fetch PlanIt renewables test2');
+  return res.json();
+}
+
+// Generic refresh function
+export async function refreshData(endpoint) {
+  const res = await fetch(`${API_BASE.replace('/api', '')}${endpoint}`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Failed to refresh ${endpoint}`);
+  return res.json();
+}
+
+// Export the API_BASE for use in components that need custom URLs
+export { API_BASE };
 

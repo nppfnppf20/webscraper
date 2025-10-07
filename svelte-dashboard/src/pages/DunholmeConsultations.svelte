@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fetchWestLindseyApplication, fetchWestLindseyConsultations } from '../lib/api.js';
+  import { fetchWestLindseyApplication, fetchWestLindseyConsultations, refreshData } from '../lib/api.js';
 
   let app = {};
   let consultations = [];
@@ -28,9 +28,8 @@
     try {
       refreshing = true;
       msg = '';
-      const res = await fetch('http://127.0.0.1:8000/api/refresh/west-lindsey', { method: 'POST' });
-      const j = await res.json();
-      if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
+      const j = await refreshData('/api/refresh/west-lindsey');
+      if (!j.ok) throw new Error(j.error || 'Refresh failed');
       const [a, c] = await Promise.all([
         fetchWestLindseyApplication(),
         fetchWestLindseyConsultations()

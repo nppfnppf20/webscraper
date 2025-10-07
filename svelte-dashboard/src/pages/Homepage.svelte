@@ -16,37 +16,37 @@
 
   // API functions to fetch data from each source
   async function fetchRtpiEvents() {
-    const response = await fetch('http://127.0.0.1:8000/api/rtpi/events');
+    const response = await fetch('${API_BASE}/rtpi/events');
     if (!response.ok) throw new Error(`RTPI Events: HTTP ${response.status}`);
     return await response.json();
   }
 
   async function fetchDunholmeConsultations() {
-    const response = await fetch('http://127.0.0.1:8000/api/west-lindsey/consultations');
+    const response = await fetch('${API_BASE}/west-lindsey/consultations');
     if (!response.ok) throw new Error(`Dunholme: HTTP ${response.status}`);
     return await response.json();
   }
 
   async function fetchPeeringdbIx() {
-    const response = await fetch('http://127.0.0.1:8000/api/peeringdb/ix/gb');
+    const response = await fetch('${API_BASE}/peeringdb/ix/gb');
     if (!response.ok) throw new Error(`PeeringDB IX: HTTP ${response.status}`);
     return await response.json();
   }
 
   async function fetchPeeringdbFac() {
-    const response = await fetch('http://127.0.0.1:8000/api/peeringdb/fac/gb');
+    const response = await fetch('${API_BASE}/peeringdb/fac/gb');
     if (!response.ok) throw new Error(`PeeringDB Facilities: HTTP ${response.status}`);
     return await response.json();
   }
 
   async function fetchPlanitDatacentres() {
-    const response = await fetch('http://127.0.0.1:8000/api/planit/datacentres');
+    const response = await fetch('${API_BASE}/planit/datacentres');
     if (!response.ok) throw new Error(`PlanIt Data Centres: HTTP ${response.status}`);
     return await response.json();
   }
 
   async function fetchPlanitRenewables() {
-    const response = await fetch('http://127.0.0.1:8000/api/planit/renewables-test2');
+    const response = await fetch('${API_BASE}/planit/renewables-test2');
     if (!response.ok) throw new Error(`PlanIt Renewables: HTTP ${response.status}`);
     return await response.json();
   }

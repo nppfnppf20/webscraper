@@ -9,7 +9,15 @@ from flask_cors import CORS
 from database import db
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS for production and development
+import os
+if os.environ.get('FLASK_ENV') == 'production':
+    # Production CORS - allow all origins temporarily to fix CORS issues
+    CORS(app)
+else:
+    # Development CORS - allow localhost
+    CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
 
 @app.route("/api/health")
 def health_check():
