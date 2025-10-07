@@ -47,7 +47,7 @@ id,name,address,city,country,postal_code
 990,4D Surrey,122 Oyster Lane,Byfleet,GB,KT14 7JU
 1009,Reliance Skewjack,"B3315, St Levant",Penzance,GB,TR 19 6NB
 1027,VIRTUS LONDON1 (Enfield),"Unit 3, Trade City, Crown Road",London,GB,EN1 1TX
-1074,Options West London Data Centre,3 Waxlow Road,London,GB,NW10 7NU
+1074,Options IT - Park Royal Datacenter (PRDC),3 Waxlow Road,London,GB,NW10 7NU
 1108,Leeds DC1,North Street,Leeds,GB,LS7 2AA
 1140,Host-IT Bletchley,Bletchley,Milton Keynes,GB,MK1
 1206,ARO DC2 Kilby House (AIMES),Kilby House,Liverpool,GB,L7 9NJ
@@ -173,7 +173,7 @@ id,name,address,city,country,postal_code
 9031,NTT Hemel Hempstead 1 Data Center (HH1),"3 Centro, Boundary Way",Hemel Hempstead,GB,HP2 7SU
 9032,NTT Hemel Hempstead 2 Data Center (HH2),150 Maylands Avenue,Hemel Hempstead,GB,HP2 7DF
 9033,NTT Hemel Hempstead 3 Data Center (HH3),"Campus, Spring Way",Hemel Hempstead,GB,HP2 7TN
-9034,NTT Slough 2 Data Center (SL2),670 Ajax Avenue,"Slough,",GB,SL1 4BG
+9034,NTT Slough 2 Data Center (SL2),670 Ajax Avenue,Slough,GB,SL1 4BG
 9035,NTT Slough 3 Data Center (SL3),665 Ajax Avenue,Slough,GB,SL1 4BG
 9234,Legend Data Centres,The Legend Building,Bradford,GB,BD1 2HB
 9310,Prescient Data Centres Northern Ireland,Atlantic Link Enterprise Campus,Coleraine,GB,BT52 1FA
