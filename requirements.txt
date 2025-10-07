@@ -1,0 +1,13 @@
+Flask==3.1.2
+flask-cors==6.0.1
+psycopg2-binary==2.9.10
+supabase==2.21.1
+python-dotenv==1.1.1
+beautifulsoup4==4.13.4
+requests==2.32.4
+requests-html==0.10.0
+lxml==6.0.2
+playwright==1.54.0
+pyquery==2.0.1
+fake-useragent==2.2.0
+tqdm==4.67.1
