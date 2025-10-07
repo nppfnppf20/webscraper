@@ -48,6 +48,18 @@ class SupabaseDB:
             print(f"Query failed: {e}")
             return []
 
+    def execute_raw(self, query: str, params: tuple = None) -> bool:
+        """Execute a raw SQL query (DDL/DML)"""
+        try:
+            with self.get_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(query, params)
+                    conn.commit()
+                    return True
+        except Exception as e:
+            print(f"Raw query failed: {e}")
+            return False
+
     def execute_insert(self, table: str, data: Dict[str, Any]) -> bool:
         """Insert data into table"""
         try:
@@ -88,16 +100,20 @@ class SupabaseDB:
 
     def get_west_lindsey_consultations(self) -> List[Dict[str, Any]]:
         """Get West Lindsey consultations with frontend-compatible field names"""
-        results = self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY original_created_time DESC")
+        results = self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY original_created_time DESC NULLS LAST")
 
         # Map database fields back to original CSV field names that frontend expects
         for item in results:
-            item['consulteeName'] = item.get('title', '')
+            item['consulteeName'] = item.get('consultee_name') or item.get('title', '')
             item['opinion'] = item.get('status', '')
             item['responseDetailsToPublish'] = item.get('description', '')
-            item['responsePublished'] = '1' if item.get('description') else '0'  # Fake this field
+            item['responsePublished'] = item.get('response_published', '0')
             item['createdTime'] = item.get('original_created_time', '')
             item['lastModifiedTime'] = item.get('original_last_modified_time', '')
+            item['consulteeEmail'] = item.get('consultee_email', '')
+            item['consulteeAddress'] = item.get('consultee_address', '')
+            item['id'] = item.get('consultation_id') or item.get('id')
+            item['applicationId'] = item.get('application_id', '')
 
         return results
 
