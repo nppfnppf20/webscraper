@@ -88,7 +88,7 @@ class SupabaseDB:
 
     def get_west_lindsey_consultations(self) -> List[Dict[str, Any]]:
         """Get West Lindsey consultations with frontend-compatible field names"""
-        results = self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY created_at DESC")
+        results = self.execute_query("SELECT * FROM west_lindsey_consultations ORDER BY original_created_time DESC")
 
         # Map database fields back to original CSV field names that frontend expects
         for item in results:
@@ -96,8 +96,8 @@ class SupabaseDB:
             item['opinion'] = item.get('status', '')
             item['responseDetailsToPublish'] = item.get('description', '')
             item['responsePublished'] = '1' if item.get('description') else '0'  # Fake this field
-            item['createdTime'] = item.get('created_at', '')
-            item['lastModifiedTime'] = item.get('updated_at', '')
+            item['createdTime'] = item.get('original_created_time', '')
+            item['lastModifiedTime'] = item.get('original_last_modified_time', '')
 
         return results
 
