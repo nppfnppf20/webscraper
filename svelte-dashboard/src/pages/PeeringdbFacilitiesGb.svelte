@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { fetchPeeringdbFacGb } from '../lib/api.js';
 
+  import { API_BASE_URL } from '../lib/config.js';
   let rows = [];
   let loading = true;
   let error = '';
@@ -22,7 +23,7 @@
     try {
       refreshing = true;
       msg = '';
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/refresh/peeringdb-fac`, { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/refresh/peeringdb-fac`, { method: 'POST' });
       const j = await res.json();
       if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
       rows = await fetchPeeringdbFacGb();

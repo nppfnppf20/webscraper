@@ -1,4 +1,5 @@
 <script>
+  import { API_BASE_URL } from '../lib/config.js';
   import { onMount } from 'svelte';
   import DataTable from '../components/DataTable.svelte';
 
@@ -10,13 +11,13 @@
 
   // API functions
   async function fetchRenewablesTest2() {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/planit/renewables-test2`);
+    const response = await fetch(`${API_BASE_URL}/planit/renewables-test2`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   }
 
   async function refreshRenewablesTest2() {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/refresh/planit-test2`, { method: 'POST' });
+    const response = await fetch(`${API_BASE_URL}/refresh/planit-test2`, { method: 'POST' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   }
