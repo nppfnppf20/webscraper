@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import * as api from '../lib/api.js';
+  import { API_BASE_URL } from '../lib/config.js';
 
   let loading = true;
   let error = '';
@@ -22,8 +23,6 @@
   const fetchPeeringdbFac = api.fetchPeeringdbFacGb;
   const fetchPlanitDatacentres = api.fetchPlanitDatacentres;
   const fetchPlanitRenewables = api.fetchPlanitRenewablesTest2;
-    return await response.json();
-  }
 
   // Helper function to format dates
   function formatDate(dateStr) {
@@ -175,7 +174,7 @@
         refreshStatus = `Refreshing ${refresh.name}...`;
 
         try {
-          const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+          const API_BASE = API_BASE_URL;
           const response = await fetch(`${API_BASE.replace('/api', '')}${refresh.endpoint}`, {
             method: 'POST'
           });
