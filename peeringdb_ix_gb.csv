@@ -1,9 +1,9 @@
 id,name,country,city,networks
-18,LINX LON1,GB,London,831
+18,LINX LON1,GB,London,830
 53,LONAP,GB,London,295
 321,LINX LON2,GB,London,313
 435,IXLeeds,GB,Leeds / Western Yorkshire,20
-583,LINX Manchester,GB,Manchester,136
+583,LINX Manchester,GB,Manchester,138
 745,LINX Scotland,GB,Scotland,36
 985,BDX BTN1,GB,Brighton,0
 1016,LINX Wales,GB,Cardiff,11
@@ -20,7 +20,7 @@ id,name,country,city,networks
 3278,IXBradford,GB,Bradford,9
 3373,NCL-IX,GB,Newcastle,6
 3732,RapidIX LON1,GB,London,14
-3821,BGP.Exchange - London,GB,London,76
+3821,BGP.Exchange - London,GB,London,75
 3877,SBIX London,GB,London,1
 4040,Edge IX Birmingham,GB,Birmingham,1
 4073,BGPHaus,GB,London,1
