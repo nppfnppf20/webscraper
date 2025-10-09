@@ -22,7 +22,8 @@
     try {
       refreshing = true;
       msg = '';
-      const res = await fetch('http://127.0.0.1:8000/api/refresh/rtpi', { method: 'POST' });
+      const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+      const res = await fetch(`${API_BASE}/refresh/rtpi`, { method: 'POST' });
       const j = await res.json();
       if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
       events = await fetchRtpiEvents();

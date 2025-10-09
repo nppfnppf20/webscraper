@@ -10,13 +10,13 @@
 
   // API functions
   async function fetchDatacentres() {
-    const response = await fetch('http://127.0.0.1:8000/api/planit/datacentres');
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/planit/datacentres`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   }
 
   async function refreshDatacentres() {
-    const response = await fetch('http://127.0.0.1:8000/api/refresh/planit-dc', { method: 'POST' });
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/refresh/planit-dc`, { method: 'POST' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   }

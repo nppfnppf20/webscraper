@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import * as api from '../lib/api.js';
 
   let loading = true;
   let error = '';
@@ -14,40 +15,13 @@
     development: {}
   };
 
-  // API functions to fetch data from each source
-  async function fetchRtpiEvents() {
-    const response = await fetch('http://127.0.0.1:8000/api/rtpi/events');
-    if (!response.ok) throw new Error(`RTPI Events: HTTP ${response.status}`);
-    return await response.json();
-  }
-
-  async function fetchDunholmeConsultations() {
-    const response = await fetch('http://127.0.0.1:8000/api/west-lindsey/consultations');
-    if (!response.ok) throw new Error(`Dunholme: HTTP ${response.status}`);
-    return await response.json();
-  }
-
-  async function fetchPeeringdbIx() {
-    const response = await fetch('http://127.0.0.1:8000/api/peeringdb/ix/gb');
-    if (!response.ok) throw new Error(`PeeringDB IX: HTTP ${response.status}`);
-    return await response.json();
-  }
-
-  async function fetchPeeringdbFac() {
-    const response = await fetch('http://127.0.0.1:8000/api/peeringdb/fac/gb');
-    if (!response.ok) throw new Error(`PeeringDB Facilities: HTTP ${response.status}`);
-    return await response.json();
-  }
-
-  async function fetchPlanitDatacentres() {
-    const response = await fetch('http://127.0.0.1:8000/api/planit/datacentres');
-    if (!response.ok) throw new Error(`PlanIt Data Centres: HTTP ${response.status}`);
-    return await response.json();
-  }
-
-  async function fetchPlanitRenewables() {
-    const response = await fetch('http://127.0.0.1:8000/api/planit/renewables-test2');
-    if (!response.ok) throw new Error(`PlanIt Renewables: HTTP ${response.status}`);
+  // Use API functions from the centralized API module
+  const fetchRtpiEvents = api.fetchRtpiEvents;
+  const fetchDunholmeConsultations = api.fetchWestLindseyConsultations;
+  const fetchPeeringdbIx = api.fetchPeeringdbIxGb;
+  const fetchPeeringdbFac = api.fetchPeeringdbFacGb;
+  const fetchPlanitDatacentres = api.fetchPlanitDatacentres;
+  const fetchPlanitRenewables = api.fetchPlanitRenewablesTest2;
     return await response.json();
   }
 
@@ -201,7 +175,8 @@
         refreshStatus = `Refreshing ${refresh.name}...`;
 
         try {
-          const response = await fetch(`http://127.0.0.1:8000${refresh.endpoint}`, {
+          const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+          const response = await fetch(`${API_BASE.replace('/api', '')}${refresh.endpoint}`, {
             method: 'POST'
           });
           const result = await response.json();
