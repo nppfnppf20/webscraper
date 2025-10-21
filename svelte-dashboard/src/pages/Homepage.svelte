@@ -11,13 +11,11 @@
   let lastRefreshTime = '';
   let nextAutoRefresh = '';
   let overview = {
-    cpd: {},
     consultations: {},
     development: {}
   };
 
   // Use API functions from the centralized API module
-  const fetchRtpiEvents = api.fetchRtpiEvents;
   const fetchDunholmeConsultations = api.fetchWestLindseyConsultations;
   const fetchPeeringdbIx = api.fetchPeeringdbIxGb;
   const fetchPeeringdbFac = api.fetchPeeringdbFacGb;
@@ -158,7 +156,6 @@
     refreshStatus = isAutoRefresh ? 'Starting automatic daily refresh...' : 'Starting global refresh...';
 
     const refreshEndpoints = [
-      { name: 'RTPI Events', endpoint: '/api/refresh/rtpi' },
       { name: 'West Lindsey', endpoint: '/api/refresh/west-lindsey' },
       { name: 'PeeringDB IX', endpoint: '/api/refresh/peeringdb-ix' },
       { name: 'PeeringDB Facilities', endpoint: '/api/refresh/peeringdb-fac' },
@@ -216,31 +213,18 @@
     try {
       // Fetch all data in parallel
       const [
-        rtpiEvents,
         dunholmeConsultations,
         peeringdbIx,
         peeringdbFac,
         planitDatacentres,
         planitRenewables
       ] = await Promise.all([
-        fetchRtpiEvents().catch(() => []),
         fetchDunholmeConsultations().catch(() => []),
         fetchPeeringdbIx().catch(() => []),
         fetchPeeringdbFac().catch(() => []),
         fetchPlanitDatacentres().catch(() => []),
         fetchPlanitRenewables().catch(() => [])
       ]);
-
-      // Process CPD/BD data
-      const rtpiTimeCounts = getTimeCounts(rtpiEvents, 'date');
-      overview.cpd = {
-        rtpiEvents: {
-          total: rtpiEvents.length,
-          recent: getRecentItems(rtpiEvents, 'date'),
-          lastUpdated: rtpiEvents.length > 0 ? 'Recently updated' : 'No data',
-          ...rtpiTimeCounts
-        }
-      };
 
       // Process TRP Consultation Trackers data
       const consultationTimeCounts = getTimeCounts(dunholmeConsultations, 'createdTime');
@@ -534,47 +518,6 @@
               <div class="recent-item">
                 <div class="item-title">{project.name || project.title || 'Untitled Project'}</div>
                 <div class="item-date">{formatDate(project.start_date)}</div>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
-
-  <!-- CPD/BD Section -->
-  <div class="category-section">
-    <h2 class="category-title">CPD/BD</h2>
-
-    <div class="overview-cards">
-      <div class="overview-card">
-        <h3>
-          <a href="#/events">RTPI Events</a>
-        </h3>
-        <p class="last-updated">{overview.cpd.rtpiEvents.lastUpdated}</p>
-
-        <div class="time-stats">
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.todayCount || 0}</span>
-            <span class="time-label">Today</span>
-          </div>
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.sevenDayCount || 0}</span>
-            <span class="time-label">7 Days</span>
-          </div>
-          <div class="time-stat">
-            <span class="time-count">{overview.cpd.rtpiEvents.thirtyDayCount || 0}</span>
-            <span class="time-label">30 Days</span>
-          </div>
-        </div>
-
-        {#if overview.cpd.rtpiEvents.recent.length > 0}
-          <div class="recent-items">
-            <h4>Recent Events:</h4>
-            {#each overview.cpd.rtpiEvents.recent as event}
-              <div class="recent-item">
-                <div class="item-title">{event.title || event.name || 'Untitled Event'}</div>
-                <div class="item-date">{formatDate(event.date)}</div>
               </div>
             {/each}
           </div>

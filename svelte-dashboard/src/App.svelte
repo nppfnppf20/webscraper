@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte';
   import Homepage from './pages/Homepage.svelte';
-  import RtpiEvents from './pages/RtpiEvents.svelte';
   import DunholmeConsultations from './pages/DunholmeConsultations.svelte';
   import PeeringdbIxGb from './pages/PeeringdbIxGb.svelte';
   import PeeringdbFacilitiesGb from './pages/PeeringdbFacilitiesGb.svelte';
@@ -29,18 +28,6 @@
 </script>
 
 <nav on:click={closeDropdowns}>
-  <!-- CPD/BD Category -->
-  <div class="dropdown" class:active={activeDropdown === 'cpd'}>
-    <button class="dropdown-toggle" on:click|stopPropagation={() => toggleDropdown('cpd')}>
-      CPD/BD
-      <span class="dropdown-arrow">▼</span>
-    </button>
-    {#if activeDropdown === 'cpd'}
-      <div class="dropdown-menu">
-        <a href="#/events" class:active={currentPath === '/events'} on:click={closeDropdowns}>RTPI Events</a>
-      </div>
-    {/if}
-  </div>
 
   <!-- TRP Consultation Trackers Category -->
   <div class="dropdown" class:active={activeDropdown === 'consultations'}>
@@ -78,8 +65,6 @@
 <main>
   {#if currentPath === '/'}
     <Homepage />
-  {:else if currentPath === '/events'}
-    <RtpiEvents />
   {:else if currentPath === '/dunholme'}
     <DunholmeConsultations />
   {:else if currentPath === '/peeringdb'}
