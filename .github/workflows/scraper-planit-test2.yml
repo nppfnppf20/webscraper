@@ -1,0 +1,37 @@
+name: 'Scraper: PlanIt Renewables Test2'
+
+on:
+  schedule:
+    # Run at 4:00 PM UTC daily
+    - cron: '0 16 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  scrape-planit-test2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run PlanIt Renewables Test2 scraper
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python -m backend.scraper.run_planit_api_test
+
+    - name: Log completion
+      run: |
+        echo "✅ PlanIt Renewables Test2 scraper completed at $(date)"
