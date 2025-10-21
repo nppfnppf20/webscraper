@@ -75,7 +75,7 @@ def _run_module(module_name: str) -> tuple[int, str, str]:
         return 124, f"Process timed out after 45 seconds", elapsed
 
 def _refresh(lock_key: str, module: str, table_name: str):
-    """Refresh data by running scraper module"""
+    """Refresh data by running scraper module (scrapers now write directly to database)"""
     lock = _locks[lock_key]
     if not lock.acquire(blocking=False):
         return jsonify({"ok": False, "error": "already_running"}), 409
@@ -84,11 +84,21 @@ def _refresh(lock_key: str, module: str, table_name: str):
         if code != 0:
             return jsonify({"ok": False, "error": "runner_failed", "elapsed_s": elapsed, "log": out[-2000:]}), 500
 
-        # Count rows after refresh - this would need to be updated based on actual table
-        row_count = 0  # You can implement this based on your needs
+        # Get current count from database
+        row_count = _get_table_count(table_name)
+
         return jsonify({"ok": True, "table": table_name, "updated": row_count, "elapsed_s": elapsed})
     finally:
         lock.release()
+
+def _get_table_count(table_name: str) -> int:
+    """Get current row count from database table"""
+    try:
+        result = db.execute_query(f"SELECT COUNT(*) as count FROM {table_name}")
+        return result[0]['count'] if result else 0
+    except Exception as e:
+        print(f"Error getting table count: {e}")
+        return 0
 
 @app.post("/api/refresh/rtpi")
 def refresh_rtpi():

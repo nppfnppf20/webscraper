@@ -14,7 +14,7 @@ id,name,address,city,country,postal_code
 79,Digital Realty London LHR21,"Memaco House, Meridian Gate",London,GB,E14 9FJ
 91,COLT DC London,"Welwyn Garden City, 20 Black Fan Road",London,GB,AL7 1QA
 243,Pulsant Newcastle NE-1 (Central),5 Bridge View,Newcastle upon Tyne,GB,NE1 6PN
-244,ServerBank Manchester,Faulkner Street,Manchester,GB,M1 4EH
+244,Wavenet Manchester,Faulkner Street,Manchester,GB,M1 4EH
 248,Level(3) London (Braham Street),6 Braham St,London,GB,E1 8EE
 254,Redcentric London Data Centre,80 Clifton Street,London,GB,EC2A 4HB
 271,Pulsant Edinburgh SC-1 (South Gyle),"The Clocktower Estate, Flassches Yard",Edinburgh,GB,EH12 9LB
@@ -74,7 +74,7 @@ id,name,address,city,country,postal_code
 1702,Reliance House,Reliance House,Newcastle upon Tyne,GB,NE4 7AN
 1728,Safehosts Cheltenham,Saxon House,Cheltenham,GB,GL52 6QX
 1740,iomart DC9 Gosport,2 Frater Gate Business Park,Gosport,GB,PO130GW
-1753,Daisy Reading,1 Transcentral Bennet Road,Reading,GB,RG2 0QX
+1753,Wavenet Reading,1 Transcentral Bennet Road,Reading,GB,RG2 0QX
 1792,Digital Realty London LHR13,Fountain Court,Chessington,GB,KT9 1SJ
 1793,Redhill Datacenter,3 Foxboro Business Park,Redhill,GB,RH1 1AX
 1802,Pulsant Edinburgh SC-3 (Newbridge),7 Claylands Road,Edinburgh,GB,EH28 8LF

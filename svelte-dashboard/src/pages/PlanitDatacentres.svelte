@@ -24,7 +24,7 @@
 
   // Filter function for medium/large projects and excluding conditions
   function filterDatacentres(data) {
-    return data.filter(project => {
+    const filtered = data.filter(project => {
       // Filter for medium and large size only
       const size = (project.app_size || '').toLowerCase();
       const isMediumOrLarge = size.includes('medium') || size.includes('large');
@@ -35,6 +35,15 @@
 
       return isMediumOrLarge && !hasConditions;
     });
+
+    // Sort by last_changed, most recent first
+    filtered.sort((a, b) => {
+      const dateA = a.last_changed || '';
+      const dateB = b.last_changed || '';
+      return dateB.localeCompare(dateA);
+    });
+
+    return filtered;
   }
 
   // Load data on component mount
