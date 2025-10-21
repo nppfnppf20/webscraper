@@ -15,9 +15,6 @@ CORS(app)
 def health_check():
     return jsonify({"status": "ok"})
 
-@app.route("/api/rtpi/events")
-def get_rtpi_events():
-    return jsonify(db.get_rtpi_events())
 
 @app.route("/api/west-lindsey/application")
 def get_west_lindsey_application():
@@ -50,7 +47,7 @@ def get_planit_renewables_test2():
 # --- Refresh (re-scrape) endpoints ---
 _locks: dict[str, threading.Lock] = {
     k: threading.Lock() for k in [
-        "rtpi", "west-lindsey", "peeringdb-ix", "peeringdb-fac", "planit-dc", "planit-renew", "planit-test2"
+        "west-lindsey", "peeringdb-ix", "peeringdb-fac", "planit-dc", "planit-renew", "planit-test2"
     ]
 }
 
@@ -100,9 +97,6 @@ def _get_table_count(table_name: str) -> int:
         print(f"Error getting table count: {e}")
         return 0
 
-@app.post("/api/refresh/rtpi")
-def refresh_rtpi():
-    return _refresh("rtpi", "backend.scraper.run_rtpi_events", "rtpi_events")
 
 @app.post("/api/refresh/west-lindsey")
 def refresh_west_lindsey():

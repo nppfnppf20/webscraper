@@ -89,9 +89,6 @@ class SupabaseDB:
 
     # API Methods for each data source
 
-    def get_rtpi_events(self) -> List[Dict[str, Any]]:
-        """Get RTPI events"""
-        return self.execute_query("SELECT * FROM rtpi_events ORDER BY created_at DESC")
 
     def get_west_lindsey_application(self) -> Dict[str, Any]:
         """Get West Lindsey planning application (latest one)"""

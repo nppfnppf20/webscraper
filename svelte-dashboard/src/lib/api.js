@@ -2,11 +2,6 @@ import { API_BASE_URL } from './config.js';
 
 const API_BASE = API_BASE_URL;
 
-export async function fetchRtpiEvents() {
-  const res = await fetch(`${API_BASE}/rtpi/events`);
-  if (!res.ok) throw new Error('Failed to fetch RTPI events');
-  return res.json();
-}
 
 export async function fetchWestLindseyApplication() {
   const res = await fetch(`${API_BASE}/west-lindsey/application`);
@@ -51,11 +46,6 @@ export async function fetchPlanitRenewablesTest2() {
 }
 
 // Refresh functions
-export async function refreshRtpi() {
-  const res = await fetch(`${API_BASE}/refresh/rtpi`, { method: 'POST' });
-  if (!res.ok) throw new Error('Failed to refresh RTPI');
-  return res.json();
-}
 
 export async function refreshWestLindsey() {
   const res = await fetch(`${API_BASE}/refresh/west-lindsey`, { method: 'POST' });
