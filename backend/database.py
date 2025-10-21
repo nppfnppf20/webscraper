@@ -152,8 +152,9 @@ class SupabaseDB:
         return results
 
     def get_planit_renewables_test2(self) -> List[Dict[str, Any]]:
-        """Get PlanIt renewables test data with field mapping for frontend compatibility"""
-        results = self.execute_query("SELECT * FROM planit_renewables ORDER BY last_scraped DESC NULLS LAST")
+        """Get PlanIt renewables test2 data with field mapping for frontend compatibility"""
+        # Show all renewables data ordered by most recent application date, then last scraped
+        results = self.execute_query("SELECT * FROM planit_renewables ORDER BY start_date DESC NULLS LAST, last_scraped DESC NULLS LAST")
 
         # Map database fields to frontend expected fields
         for item in results:
@@ -161,6 +162,17 @@ class SupabaseDB:
             item['lat'] = item.get('latitude')
             item['lng'] = item.get('longitude')
             item['link'] = item.get('url')
+
+            # Fix missing names - use uid as fallback if name is empty
+            if not item.get('name'):
+                item['name'] = item.get('uid', '')
+
+            # Fix missing area_name - extract from uid if missing
+            if not item.get('area_name') and item.get('uid'):
+                # Extract authority from uid (e.g., "EastRiding/25/02255/STPLFE" -> "EastRiding")
+                uid_parts = item.get('uid', '').split('/')
+                if len(uid_parts) > 0:
+                    item['area_name'] = uid_parts[0]
 
         return results
 

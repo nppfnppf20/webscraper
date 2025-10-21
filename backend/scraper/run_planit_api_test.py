@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import csv
+import sys
+import os
 from pathlib import Path
 from .planit_api_scraper import (
     fetch_renewables_from_planit_api,
@@ -9,6 +11,53 @@ from .planit_api_scraper import (
     PlanItAPIRateLimit,
 )
 from .io import save_csv
+
+# Add parent directory to path for database import
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from database import db
+
+
+def _map_fields_for_database(rows):
+    """Map CSV fields to database schema fields"""
+    mapped_rows = []
+    for row in rows:
+        mapped_row = {}
+
+        # Map fields to database schema (only include existing database columns)
+        field_mapping = {
+            'uid': 'uid',
+            'name': 'name',  # CSV name -> DB name
+            'description': 'description',
+            'app_type': 'app_type',
+            'app_size': 'app_size',
+            'app_state': 'app_state',
+            'start_date': 'start_date',
+            'decided_date': 'decided_date',
+            'address': 'address',
+            'postcode': 'postcode',
+            'area_name': 'area_name',
+            'lat': 'latitude',
+            'lng': 'longitude',
+            'url': 'url',
+            'link': 'url',  # fallback mapping
+            'other_fields': 'other_fields',
+            'last_scraped': 'last_scraped',
+            'last_changed': 'last_changed',
+        }
+
+        for csv_field, db_field in field_mapping.items():
+            if csv_field in row and row[csv_field]:
+                mapped_row[db_field] = row[csv_field]
+
+        # Set required defaults
+        mapped_row['is_new'] = row.get('is_new', 'true') == 'true'
+        mapped_row['scraper_name'] = 'test2'  # Tag records as test2
+        if 'last_changed' in row:
+            mapped_row['last_different'] = row['last_changed']
+
+        mapped_rows.append(mapped_row)
+
+    return mapped_rows
 
 
 if __name__ == "__main__":
@@ -19,63 +68,61 @@ if __name__ == "__main__":
     output_path = Path(__file__).parent.parent.parent / "planit_renewables_test2.csv"
 
     try:
-        print("[PlanIt API Test] 🚀 Starting accumulative PlanIt API search...")
+        print("[PlanIt API Test] 🚀 Starting PlanIt API renewables test2 scraper...")
 
-        # Read existing data
-        existing_records = []
+        # Get existing IDs from database (check all scrapers since UIDs are unique across all)
+        existing_db_records = db.execute_query("SELECT id, uid FROM planit_renewables") or []
         existing_ids = set()
-        if output_path.exists():
-            try:
-                with open(output_path, 'r', encoding='utf-8') as f:
-                    reader = csv.DictReader(f)
-                    for row in reader:
-                        # Mark all existing records as not new
-                        row['is_new'] = 'false'
-                        existing_records.append(row)
-                        if 'id' in row and row['id']:
-                            existing_ids.add(row['id'])
-                        elif 'uid' in row and row['uid']:  # fallback to uid if no id
-                            existing_ids.add(row['uid'])
-                print(f"[PlanIt API Test] 📋 Found {len(existing_records)} existing records")
-            except Exception as e:
-                print(f"[PlanIt API Test] ⚠️ Could not read existing file: {e}")
+        for record in existing_db_records:
+            # Add both id and uid to the set (use both, not elif)
+            if record.get('id'):
+                existing_ids.add(record['id'])
+            if record.get('uid'):
+                existing_ids.add(record['uid'])
 
-        # Use the exact same API call as your working CSV link
+        print(f"[PlanIt API Test] 📋 Found {len(existing_db_records)} existing records in database")
+
+        # Fetch new data from API
         raw_results = fetch_renewables_from_planit_api()
-
         print(f"[PlanIt API Test] 🔄 Processing {len(raw_results)} API results...")
 
-        # Process new results
+        # Process and filter new records
         new_records = []
-        new_count = 0
         for raw_record in raw_results:
             try:
                 normalized = normalize_planit_api_result(raw_record)
 
-                # Check if this is a new record (try id first, then uid)
+                # Check if this is a new record
                 record_id = normalized.get('id', '') or normalized.get('uid', '')
                 if record_id and record_id not in existing_ids:
                     normalized['is_new'] = 'true'
                     new_records.append(normalized)
-                    new_count += 1
-                # If it's an existing record, we don't need to add it again
 
             except Exception as e:
                 print(f"[PlanIt API Test] ⚠️ Error normalizing record: {e}")
                 continue
 
-        print(f"[PlanIt API Test] ✨ Found {new_count} new records to add")
+        print(f"[PlanIt API Test] ✨ Found {len(new_records)} new records to add")
 
-        # Combine existing and new records
-        all_records = existing_records + new_records
-        total_count = len(all_records)
+        # Save to database
+        if new_records:
+            print(f"[PlanIt API Test] 💾 Saving {len(new_records)} new records to database...")
+            mapped_rows = _map_fields_for_database(new_records)
+            success = db.execute_upsert("planit_renewables", mapped_rows)
+            if success:
+                print(f"[PlanIt API Test] ✅ Successfully saved {len(new_records)} new records to database")
+            else:
+                print(f"[PlanIt API Test] ❌ Failed to save to database")
+        else:
+            print(f"[PlanIt API Test] ℹ️ No new records to save")
 
-        print(f"[PlanIt API Test] 📊 Total records: {total_count} ({len(existing_records)} existing + {new_count} new)")
+        # Optional: still save to CSV for backup
+        all_records = new_records  # Only save new records to CSV
+        if all_records:
+            save_csv(output_path, all_records)
 
-        # Save combined results
-        save_csv(output_path, all_records)
-
-        print(f"[PlanIt API Test] ✅ Success! Saved {total_count} renewables projects to {output_path.name}")
+        total_in_db = len(existing_db_records) + len(new_records)
+        print(f"[PlanIt API Test] ✅ Success! Database now contains {total_in_db} total renewables test2 records")
 
         # Summary stats for new records only
         if new_records:

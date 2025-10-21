@@ -11,7 +11,13 @@
 
   onMount(async () => {
     try {
-      rows = await fetchPlanitRenewables();
+      const data = await fetchPlanitRenewables();
+      // Sort by last_changed, most recent first
+      rows = data.sort((a, b) => {
+        const dateA = a.last_changed || '';
+        const dateB = b.last_changed || '';
+        return dateB.localeCompare(dateA);
+      });
     } catch (e) {
       error = e?.message || 'Failed to load data';
     } finally {
@@ -26,7 +32,13 @@
       const res = await fetch(`${API_BASE_URL}/refresh/planit-renew`, { method: 'POST' });
       const j = await res.json();
       if (!res.ok || !j.ok) throw new Error(j.error || 'Refresh failed');
-      rows = await fetchPlanitRenewables();
+      const data = await fetchPlanitRenewables();
+      // Sort by last_changed, most recent first
+      rows = data.sort((a, b) => {
+        const dateA = a.last_changed || '';
+        const dateB = b.last_changed || '';
+        return dateB.localeCompare(dateA);
+      });
       msg = `Refreshed (${j.csv}) in ${j.elapsed_s}s, rows: ${j.updated}`;
     } catch (e) {
       msg = e.message || 'Refresh failed';

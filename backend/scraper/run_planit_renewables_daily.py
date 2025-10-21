@@ -5,6 +5,10 @@ from datetime import date, timedelta
 from .planit_renewables import fetch_page, normalize, RateLimitExceeded
 from .session import make_session
 from .io import save_csv
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from database import db
 
 
 def fetch_recent_renewables_limited(days_back: int = 30, max_pages: int = 3) -> list:
@@ -75,6 +79,44 @@ def fetch_recent_renewables_limited(days_back: int = 30, max_pages: int = 3) -> 
     return list(seen.values())
 
 
+def _map_fields_for_database(rows):
+    """Map CSV fields to database schema fields (conservative mapping)"""
+    mapped_rows = []
+    for row in rows:
+        mapped_row = {}
+
+        # Only use fields that definitely exist in database (minimal set)
+        field_mapping = {
+            'id': 'id',
+            'title': 'title',
+            'description': 'description',
+            'app_type': 'app_type',
+            'app_size': 'app_size',
+            'app_state': 'app_state',
+            'start_date': 'start_date',
+            'decided_date': 'decided_date',
+            'last_changed': 'last_changed',
+            'address': 'address',
+            'authority': 'area_name',  # Map authority to area_name
+            'lat': 'latitude',  # Map lat to latitude
+            'lng': 'longitude',  # Map lng to longitude
+        }
+
+        for csv_field, db_field in field_mapping.items():
+            if csv_field in row and row[csv_field]:
+                mapped_row[db_field] = row[csv_field]
+
+        # Set required defaults
+        mapped_row['is_new'] = True
+        if 'last_changed' in row:
+            mapped_row['last_scraped'] = row['last_changed']
+            mapped_row['last_different'] = row['last_changed']
+
+        mapped_rows.append(mapped_row)
+
+    return mapped_rows
+
+
 if __name__ == "__main__":
     """Super fast version: just last 30 days, max 3 pages, no geocoding"""
     output_path = Path(__file__).parent.parent.parent / "planit_renewables.csv"
@@ -83,8 +125,19 @@ if __name__ == "__main__":
         # Very limited scope for dashboard refresh
         rows = fetch_recent_renewables_limited(days_back=30, max_pages=3)
 
+        # Save to database with field mapping
+        if rows:
+            print(f"[PlanIt Daily] 💾 Saving {len(rows)} records to database...")
+            mapped_rows = _map_fields_for_database(rows)
+            success = db.execute_upsert("planit_renewables", mapped_rows)
+            if success:
+                print(f"[PlanIt Daily] ✅ Successfully saved {len(rows)} records to database")
+            else:
+                print(f"[PlanIt Daily] ❌ Failed to save to database")
+
+        # Also save to CSV for backwards compatibility (optional)
         save_csv(output_path, rows)
-        print(f"[PlanIt Daily] ✅ Success! Saved {len(rows)} recent renewables to {output_path.name}")
+        print(f"[PlanIt Daily] ✅ Success! Updated database with {len(rows)} recent renewables")
 
     except Exception as e:
         print(f"[PlanIt Daily] ❌ Error: {e}")
