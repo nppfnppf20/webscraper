@@ -15,6 +15,44 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from database import db
 
 
+def _map_fields_for_database(rows):
+    """Map fields to database schema (only include existing database columns)"""
+    mapped_rows = []
+    for row in rows:
+        mapped_row = {}
+
+        # Map fields to database schema (only existing datacentres columns)
+        field_mapping = {
+            'uid': 'uid',
+            'name': 'name',
+            'description': 'description',
+            'app_type': 'app_type',
+            'app_size': 'app_size',
+            'app_state': 'app_state',
+            'start_date': 'start_date',
+            'decided_date': 'decided_date',
+            'address': 'address',
+            'postcode': 'postcode',
+            'area_name': 'area_name',
+            'lat': 'latitude',
+            'lng': 'longitude',
+            'url': 'url',
+            'link': 'url',  # fallback mapping
+            'last_scraped': 'last_scraped',
+        }
+
+        for csv_field, db_field in field_mapping.items():
+            if csv_field in row and row[csv_field]:
+                mapped_row[db_field] = row[csv_field]
+
+        # Set required defaults (only use existing columns)
+        mapped_row['scraper_name'] = 'datacentres'  # Tag records as datacentres
+
+        mapped_rows.append(mapped_row)
+
+    return mapped_rows
+
+
 if __name__ == "__main__":
     """
     PlanIt Datacentres API - Using official PlanIt API
@@ -29,12 +67,11 @@ if __name__ == "__main__":
         existing_records = db.execute_query("SELECT * FROM planit_datacentres")
         existing_ids = set()
 
-        # Mark all existing records as not new and collect IDs
+        # Collect existing IDs (fix the elif bug)
         for row in existing_records:
-            row['is_new'] = 'false'
             if 'id' in row and row['id']:
                 existing_ids.add(row['id'])
-            elif 'uid' in row and row['uid']:  # fallback to uid if no id
+            if 'uid' in row and row['uid']:  # Use both id and uid
                 existing_ids.add(row['uid'])
 
         print(f"[PlanIt API Datacentres] 📋 Found {len(existing_records)} existing records in database")
@@ -65,26 +102,20 @@ if __name__ == "__main__":
 
         print(f"[PlanIt API Datacentres] ✨ Found {new_count} new records to add")
 
-        # Update existing records in database (mark as not new)
-        if existing_records:
-            print(f"[PlanIt API Datacentres] 🔄 Updating {len(existing_records)} existing records...")
-            mapped_existing = _map_fields_for_database(existing_records)
-            db.execute_upsert("planit_datacentres", mapped_existing)
-
-        # Insert new records to database
+        # Save new records to database
         if new_records:
-            print(f"[PlanIt API Datacentres] ➕ Inserting {len(new_records)} new records...")
+            print(f"[PlanIt API Datacentres] 💾 Saving {len(new_records)} new records to database...")
             mapped_new = _map_fields_for_database(new_records)
-            db.execute_upsert("planit_datacentres", mapped_new)
+            success = db.execute_upsert("planit_datacentres", mapped_new)
+            if success:
+                print(f"[PlanIt API Datacentres] ✅ Successfully saved {len(new_records)} new records to database")
+            else:
+                print(f"[PlanIt API Datacentres] ❌ Failed to save to database")
+        else:
+            print(f"[PlanIt API Datacentres] ℹ️ No new records to save")
 
         total_count = len(existing_records) + new_count
-        print(f"[PlanIt API Datacentres] 📊 Total records in database: {total_count} ({len(existing_records)} existing + {new_count} new)")
-
-        # Also save to CSV for backwards compatibility (optional)
-        all_records = existing_records + new_records
-        save_csv(output_path, all_records)
-
-        print(f"[PlanIt API Datacentres] ✅ Success! Updated database with {total_count} datacentre projects")
+        print(f"[PlanIt API Datacentres] ✅ Success! Database now contains {total_count} total datacentre projects")
 
         # Summary stats for new records only
         if new_records:
@@ -117,43 +148,3 @@ if __name__ == "__main__":
         import sys
         sys.exit(1)
 
-
-def _map_fields_for_database(rows):
-    """Map CSV fields to database schema fields"""
-    mapped_rows = []
-    for row in rows:
-        mapped_row = {}
-
-        # Keep existing fields that match database schema
-        db_fields = [
-            'name', 'uid', 'description', 'address', 'postcode', 'url',
-            'app_size', 'app_state', 'app_type', 'start_date', 'decided_date',
-            'area_name', 'last_scraped', 'last_different', 'lng', 'lat',
-            'last_changed', 'location_x', 'location_y', 'is_new'
-        ]
-
-        for field in db_fields:
-            if field in row:
-                mapped_row[field] = row[field]
-
-        # Map additional fields to match database
-        if 'lat' in row:
-            mapped_row['latitude'] = row['lat']
-        if 'lng' in row:
-            mapped_row['longitude'] = row['lng']
-        if 'link' in row and not mapped_row.get('url'):
-            mapped_row['url'] = row['link']
-        if 'name' in row:
-            mapped_row['title'] = row['name']
-
-        # Handle ID field mapping
-        if 'uid' in row:
-            mapped_row['id'] = row['uid']
-
-        # Set default values for required fields
-        if 'is_new' not in mapped_row:
-            mapped_row['is_new'] = True
-
-        mapped_rows.append(mapped_row)
-
-    return mapped_rows
