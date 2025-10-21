@@ -230,7 +230,7 @@
 </script>
 
 <div class="page-header">
-  <h1>PlanIt Renewables Test 2</h1>
+  <h1>PlanIt Renewables</h1>
   <p>Medium/Large renewables projects (solar, photovoltaic, battery, BESS) from last 30 days using official PlanIt API - filtered to exclude conditions</p>
 </div>
 
