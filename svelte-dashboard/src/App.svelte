@@ -6,6 +6,7 @@
   import PeeringdbFacilitiesGb from './pages/PeeringdbFacilitiesGb.svelte';
   import PlanitDatacentres from './pages/PlanitDatacentres.svelte';
   import PlanitRenewablesTest2 from './pages/PlanitRenewablesTest2.svelte';
+  import MapPage from './pages/MapPage.svelte';
 
   let currentPath = window.location.hash.slice(1) || '/';
   let activeDropdown = null;
@@ -58,6 +59,9 @@
     {/if}
   </div>
 
+  <!-- Map Button -->
+  <a href="#/map" class="nav-button" class:active={currentPath === '/map'}>Map</a>
+
   <span class="spacer"></span>
   <a href="#/" class="brand">Web Scraper Dashboard</a>
 </nav>
@@ -75,6 +79,8 @@
     <PlanitDatacentres />
   {:else if currentPath === '/planit-test2'}
     <PlanitRenewablesTest2 />
+  {:else if currentPath === '/map'}
+    <MapPage />
   {:else}
     <p>Page not found.</p>
   {/if}
@@ -150,6 +156,30 @@
   }
 
   .dropdown-menu a.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .nav-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  .nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .nav-button.active {
     background-color: var(--primary-color);
     color: white;
   }
