@@ -4,6 +4,11 @@ import csv
 import sys
 import os
 from pathlib import Path
+
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 from .planit_api_scraper import (
     fetch_renewables_from_planit_api,
     normalize_planit_api_result,

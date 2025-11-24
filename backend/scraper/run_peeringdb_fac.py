@@ -5,6 +5,12 @@ from .peeringdb import fetch_facilities_gb, normalize_facility
 from .io import save_csv
 import sys
 import os
+
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from database import db
 

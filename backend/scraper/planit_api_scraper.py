@@ -35,7 +35,7 @@ def fetch_renewables_from_planit_api() -> List[Dict]:
 
     # Use the exact same parameters from your working link
     params = {
-        'recent': '30',  # Last 30 days
+        'recent': '90',  # Last 90 days (increased from 30)
         'search': '"solar farm" or photovoltaic or "battery storage" or BESS or "energy storage" or "wind turbine" or windfarm or hydro or "anaerobic digestion"',
         'select': '*',  # Select all fields
         'sort': '-start_date',  # Sort by start date descending
