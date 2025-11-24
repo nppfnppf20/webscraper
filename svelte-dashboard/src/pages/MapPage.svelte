@@ -6,12 +6,15 @@
   import {
     filterRecordsWithCoordinates,
     createRenewablesMarker,
-    filterRenewables
+    filterRenewables,
+    createDataCentresMarker,
+    filterDataCentres
   } from '../utils/mapUtils.js';
 
   let mapContainer = null;
   let map = null;
   let renewablesLayer = null;
+  let dataCentresLayer = null;
   let loading = true;
   let error = '';
 
@@ -29,26 +32,46 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      // Create empty renewables layer
+      // Create empty layer groups
       renewablesLayer = L.layerGroup().addTo(map);
+      dataCentresLayer = L.layerGroup().addTo(map);
 
       // Fetch renewables data
-      const response = await fetch(`${API_BASE_URL}/planit/renewables-test2`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const rawData = await response.json();
+      const renewablesResponse = await fetch(`${API_BASE_URL}/planit/renewables-test2`);
+      if (!renewablesResponse.ok) throw new Error(`HTTP ${renewablesResponse.status}`);
+      const renewablesRawData = await renewablesResponse.json();
 
       // Apply filtering (medium/large, no conditions)
-      const filteredData = filterRenewables(rawData);
+      const renewablesFiltered = filterRenewables(renewablesRawData);
 
       // Filter for records with coordinates
-      const recordsWithCoords = filterRecordsWithCoordinates(filteredData);
+      const renewablesWithCoords = filterRecordsWithCoordinates(renewablesFiltered);
 
-      console.log(`📍 Loaded ${recordsWithCoords.length} renewables projects with coordinates (out of ${filteredData.length} filtered)`);
+      console.log(`⚡ Loaded ${renewablesWithCoords.length} renewables projects with coordinates (out of ${renewablesFiltered.length} filtered)`);
 
-      // Create markers for each record
-      recordsWithCoords.forEach(record => {
+      // Create markers for each renewables record
+      renewablesWithCoords.forEach(record => {
         const marker = createRenewablesMarker(L, record);
         renewablesLayer.addLayer(marker);
+      });
+
+      // Fetch data centres data
+      const dataCentresResponse = await fetch(`${API_BASE_URL}/planit/datacentres`);
+      if (!dataCentresResponse.ok) throw new Error(`HTTP ${dataCentresResponse.status}`);
+      const dataCentresRawData = await dataCentresResponse.json();
+
+      // Apply filtering (medium/large, no conditions)
+      const dataCentresFiltered = filterDataCentres(dataCentresRawData);
+
+      // Filter for records with coordinates
+      const dataCentresWithCoords = filterRecordsWithCoordinates(dataCentresFiltered);
+
+      console.log(`🏢 Loaded ${dataCentresWithCoords.length} data centres with coordinates (out of ${dataCentresFiltered.length} filtered)`);
+
+      // Create markers for each data centre record
+      dataCentresWithCoords.forEach(record => {
+        const marker = createDataCentresMarker(L, record);
+        dataCentresLayer.addLayer(marker);
       });
 
       loading = false;
@@ -84,7 +107,7 @@
     {/if}
 
     {#if map && !loading}
-      <LayerControl {map} {renewablesLayer} />
+      <LayerControl {map} {renewablesLayer} {dataCentresLayer} />
     {/if}
   </div>
 </div>

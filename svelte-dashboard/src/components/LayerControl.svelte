@@ -3,8 +3,10 @@
 
   export let map = null;
   export let renewablesLayer = null;
+  export let dataCentresLayer = null;
 
   let showRenewables = true;
+  let showDataCentres = true;
 
   function toggleRenewables() {
     // showRenewables is already updated by bind:checked
@@ -13,6 +15,17 @@
         map.addLayer(renewablesLayer);
       } else {
         map.removeLayer(renewablesLayer);
+      }
+    }
+  }
+
+  function toggleDataCentres() {
+    // showDataCentres is already updated by bind:checked
+    if (dataCentresLayer && map) {
+      if (showDataCentres) {
+        map.addLayer(dataCentresLayer);
+      } else {
+        map.removeLayer(dataCentresLayer);
       }
     }
   }
@@ -31,6 +44,14 @@
       on:change={toggleRenewables}
     />
     <span>Renewables</span>
+  </label>
+  <label class="layer-item">
+    <input
+      type="checkbox"
+      bind:checked={showDataCentres}
+      on:change={toggleDataCentres}
+    />
+    <span>Data Centres</span>
   </label>
 </div>
 
