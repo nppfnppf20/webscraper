@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "3.1.2",
     "svelte": "4.2.18",

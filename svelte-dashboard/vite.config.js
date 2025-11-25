@@ -3,6 +3,17 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 export default defineConfig({
   plugins: [svelte()],
-  server: { host: true, port: 5174 }
+  server: { host: true, port: 5174 },
+  build: {
+    rollupOptions: {
+      external: []
+    }
+  },
+  optimizeDeps: {
+    include: ['leaflet']
+  },
+  css: {
+    preprocessorOptions: {}
+  }
 })
 
