@@ -11,7 +11,10 @@
     filterDataCentres,
     createREPDSolarMarker,
     createREPDWindMarker,
-    createREPDBatteryMarker
+    createREPDBatteryMarker,
+    createTRPCommercialMarker,
+    createTRPEnergyMarker,
+    createTRPResidentialMarker
   } from '../utils/mapUtils.js';
 
   let mapContainer = null;
@@ -21,6 +24,9 @@
   let repdSolarLayer = null;
   let repdWindLayer = null;
   let repdBatteryLayer = null;
+  let trpCommercialLayer = null;
+  let trpEnergyLayer = null;
+  let trpResidentialLayer = null;
   let loading = true;
   let error = '';
 
@@ -44,6 +50,9 @@
       repdSolarLayer = L.layerGroup().addTo(map);
       repdWindLayer = L.layerGroup().addTo(map);
       repdBatteryLayer = L.layerGroup().addTo(map);
+      trpCommercialLayer = L.layerGroup().addTo(map);
+      trpEnergyLayer = L.layerGroup().addTo(map);
+      trpResidentialLayer = L.layerGroup().addTo(map);
 
       // Fetch renewables data
       const renewablesResponse = await fetch(`${API_BASE_URL}/planit/renewables-test2`);
@@ -116,6 +125,42 @@
         repdBatteryLayer.addLayer(marker);
       });
 
+      // Fetch TRP Projects data
+      const trpCommercialResponse = await fetch(`${API_BASE_URL}/trp/commercial`);
+      if (!trpCommercialResponse.ok) throw new Error(`HTTP ${trpCommercialResponse.status}`);
+      const trpCommercialData = await trpCommercialResponse.json();
+      const trpCommercialWithCoords = filterRecordsWithCoordinates(trpCommercialData);
+
+      const trpEnergyResponse = await fetch(`${API_BASE_URL}/trp/energy`);
+      if (!trpEnergyResponse.ok) throw new Error(`HTTP ${trpEnergyResponse.status}`);
+      const trpEnergyData = await trpEnergyResponse.json();
+      const trpEnergyWithCoords = filterRecordsWithCoordinates(trpEnergyData);
+
+      const trpResidentialResponse = await fetch(`${API_BASE_URL}/trp/residential`);
+      if (!trpResidentialResponse.ok) throw new Error(`HTTP ${trpResidentialResponse.status}`);
+      const trpResidentialData = await trpResidentialResponse.json();
+      const trpResidentialWithCoords = filterRecordsWithCoordinates(trpResidentialData);
+
+      console.log(`🏢 Loaded ${trpCommercialWithCoords.length} TRP Commercial projects`);
+      console.log(`⚡ Loaded ${trpEnergyWithCoords.length} TRP Energy projects`);
+      console.log(`🏘️ Loaded ${trpResidentialWithCoords.length} TRP Residential projects`);
+
+      // Create markers for TRP projects
+      trpCommercialWithCoords.forEach(record => {
+        const marker = createTRPCommercialMarker(L, record);
+        trpCommercialLayer.addLayer(marker);
+      });
+
+      trpEnergyWithCoords.forEach(record => {
+        const marker = createTRPEnergyMarker(L, record);
+        trpEnergyLayer.addLayer(marker);
+      });
+
+      trpResidentialWithCoords.forEach(record => {
+        const marker = createTRPResidentialMarker(L, record);
+        trpResidentialLayer.addLayer(marker);
+      });
+
       loading = false;
 
       // Fix map size after rendering
@@ -149,7 +194,17 @@
     {/if}
 
     {#if map && !loading}
-      <LayerControl {map} {renewablesLayer} {dataCentresLayer} {repdSolarLayer} {repdWindLayer} {repdBatteryLayer} />
+      <LayerControl
+        {map}
+        {renewablesLayer}
+        {dataCentresLayer}
+        {repdSolarLayer}
+        {repdWindLayer}
+        {repdBatteryLayer}
+        {trpCommercialLayer}
+        {trpEnergyLayer}
+        {trpResidentialLayer}
+      />
     {/if}
   </div>
 </div>

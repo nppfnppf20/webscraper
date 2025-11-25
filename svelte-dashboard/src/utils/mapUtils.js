@@ -254,3 +254,62 @@ export function formatREPDPopupContent(record) {
     </div>
   `;
 }
+
+/**
+ * Create a square marker with custom color
+ */
+function createSquareMarker(L, lat, lng, color, record, popupFormatter) {
+  const icon = L.divIcon({
+    className: 'square-marker',
+    html: `<div style="width: 12px; height: 12px; background-color: ${color}; border: 2px solid #fff; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, -8]
+  });
+
+  const marker = L.marker([lat, lng], { icon });
+  marker.bindPopup(popupFormatter(record));
+  return marker;
+}
+
+/**
+ * Create a TRP Commercial marker (purple square)
+ */
+export function createTRPCommercialMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+  return createSquareMarker(L, lat, lng, '#9c27b0', record, formatTRPPopupContent);
+}
+
+/**
+ * Create a TRP Energy marker (teal square)
+ */
+export function createTRPEnergyMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+  return createSquareMarker(L, lat, lng, '#009688', record, formatTRPPopupContent);
+}
+
+/**
+ * Create a TRP Residential marker (coral square)
+ */
+export function createTRPResidentialMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+  return createSquareMarker(L, lat, lng, '#ff7043', record, formatTRPPopupContent);
+}
+
+/**
+ * Format popup content for a TRP project
+ */
+export function formatTRPPopupContent(record) {
+  const name = record.name || 'Unknown Project';
+  const description = record.description || 'No description';
+
+  return `
+    <div style="max-width: 300px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">${name}</h3>
+      <p style="margin: 5px 0; font-size: 12px;">${description}</p>
+    </div>
+  `;
+}

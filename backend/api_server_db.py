@@ -48,6 +48,18 @@ def get_planit_renewables_test2():
 def get_repd():
     return jsonify(db.get_repd_data())
 
+@app.route("/api/trp/commercial")
+def get_trp_commercial():
+    return jsonify(db.get_trp_commercial())
+
+@app.route("/api/trp/energy")
+def get_trp_energy():
+    return jsonify(db.get_trp_energy())
+
+@app.route("/api/trp/residential")
+def get_trp_residential():
+    return jsonify(db.get_trp_residential())
+
 # --- Refresh (re-scrape) endpoints ---
 _locks: dict[str, threading.Lock] = {
     k: threading.Lock() for k in [

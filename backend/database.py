@@ -208,5 +208,41 @@ class SupabaseDB:
 
         return results
 
+    def get_trp_commercial(self) -> List[Dict[str, Any]]:
+        """Get TRP Projects - Commercial, Economic and Industrial"""
+        query = """
+            SELECT
+                *,
+                ST_Y(ST_Transform(geom, 4326)) as lat,
+                ST_X(ST_Transform(geom, 4326)) as lng
+            FROM "TRP Projects- Commercial, Economic and Industrial"
+            ORDER BY name
+        """
+        return self.execute_query(query)
+
+    def get_trp_energy(self) -> List[Dict[str, Any]]:
+        """Get TRP Projects - Energy, digital and infrastructure"""
+        query = """
+            SELECT
+                *,
+                ST_Y(ST_Transform(geom, 4326)) as lat,
+                ST_X(ST_Transform(geom, 4326)) as lng
+            FROM "TRP Projects- Energy, digital and infrastructure"
+            ORDER BY name
+        """
+        return self.execute_query(query)
+
+    def get_trp_residential(self) -> List[Dict[str, Any]]:
+        """Get TRP Projects - Residential and Strategic Land"""
+        query = """
+            SELECT
+                *,
+                ST_Y(ST_Transform(geom, 4326)) as lat,
+                ST_X(ST_Transform(geom, 4326)) as lng
+            FROM "TRP Projects- Residential and Strategic Land"
+            ORDER BY name
+        """
+        return self.execute_query(query)
+
 # Global database instance
 db = SupabaseDB()

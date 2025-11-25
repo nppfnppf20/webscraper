@@ -7,15 +7,22 @@
   export let repdSolarLayer = null;
   export let repdWindLayer = null;
   export let repdBatteryLayer = null;
+  export let trpCommercialLayer = null;
+  export let trpEnergyLayer = null;
+  export let trpResidentialLayer = null;
 
   let showRenewables = true;
   let showDataCentres = true;
   let showREPDSolar = true;
   let showREPDWind = true;
   let showREPDBattery = true;
+  let showTRPCommercial = true;
+  let showTRPEnergy = true;
+  let showTRPResidential = true;
 
   let renewablesRootExpanded = true;
   let dataCentresRootExpanded = true;
+  let trpRootExpanded = true;
   let repdGroupExpanded = true;
 
   function toggleRenewables() {
@@ -80,6 +87,102 @@
     dataCentresRootExpanded = !dataCentresRootExpanded;
   }
 
+  function toggleTRPRoot() {
+    trpRootExpanded = !trpRootExpanded;
+  }
+
+  function toggleTRPCommercial() {
+    if (trpCommercialLayer && map) {
+      if (showTRPCommercial) {
+        map.addLayer(trpCommercialLayer);
+      } else {
+        map.removeLayer(trpCommercialLayer);
+      }
+    }
+  }
+
+  function toggleTRPEnergy() {
+    if (trpEnergyLayer && map) {
+      if (showTRPEnergy) {
+        map.addLayer(trpEnergyLayer);
+      } else {
+        map.removeLayer(trpEnergyLayer);
+      }
+    }
+  }
+
+  function toggleTRPResidential() {
+    if (trpResidentialLayer && map) {
+      if (showTRPResidential) {
+        map.addLayer(trpResidentialLayer);
+      } else {
+        map.removeLayer(trpResidentialLayer);
+      }
+    }
+  }
+
+  function toggleAllRenewables() {
+    const newState = !allRenewablesChecked;
+    showRenewables = newState;
+    showREPDSolar = newState;
+    showREPDWind = newState;
+    showREPDBattery = newState;
+
+    // Apply to map
+    if (map) {
+      if (newState) {
+        if (renewablesLayer) map.addLayer(renewablesLayer);
+        if (repdSolarLayer) map.addLayer(repdSolarLayer);
+        if (repdWindLayer) map.addLayer(repdWindLayer);
+        if (repdBatteryLayer) map.addLayer(repdBatteryLayer);
+      } else {
+        if (renewablesLayer) map.removeLayer(renewablesLayer);
+        if (repdSolarLayer) map.removeLayer(repdSolarLayer);
+        if (repdWindLayer) map.removeLayer(repdWindLayer);
+        if (repdBatteryLayer) map.removeLayer(repdBatteryLayer);
+      }
+    }
+  }
+
+  function toggleAllDataCentres() {
+    const newState = !allDataCentresChecked;
+    showDataCentres = newState;
+
+    // Apply to map
+    if (map && dataCentresLayer) {
+      if (newState) {
+        map.addLayer(dataCentresLayer);
+      } else {
+        map.removeLayer(dataCentresLayer);
+      }
+    }
+  }
+
+  function toggleAllTRP() {
+    const newState = !allTRPChecked;
+    showTRPCommercial = newState;
+    showTRPEnergy = newState;
+    showTRPResidential = newState;
+
+    // Apply to map
+    if (map) {
+      if (newState) {
+        if (trpCommercialLayer) map.addLayer(trpCommercialLayer);
+        if (trpEnergyLayer) map.addLayer(trpEnergyLayer);
+        if (trpResidentialLayer) map.addLayer(trpResidentialLayer);
+      } else {
+        if (trpCommercialLayer) map.removeLayer(trpCommercialLayer);
+        if (trpEnergyLayer) map.removeLayer(trpEnergyLayer);
+        if (trpResidentialLayer) map.removeLayer(trpResidentialLayer);
+      }
+    }
+  }
+
+  // Computed properties to determine if all layers in a group are checked
+  $: allRenewablesChecked = showRenewables && showREPDSolar && showREPDWind && showREPDBattery;
+  $: allDataCentresChecked = showDataCentres;
+  $: allTRPChecked = showTRPCommercial && showTRPEnergy && showTRPResidential;
+
   onMount(() => {
     // Control is created, ready to use
   });
@@ -90,9 +193,15 @@
 
   <!-- Renewables Root Folder -->
   <div class="layer-group root-group">
-    <div class="layer-group-header root-header" on:click={toggleRenewablesRoot}>
-      <span class="group-arrow" class:expanded={renewablesRootExpanded}>▶</span>
-      <span class="group-title">Renewables</span>
+    <div class="layer-group-header root-header">
+      <input
+        type="checkbox"
+        checked={allRenewablesChecked}
+        on:change={toggleAllRenewables}
+        on:click|stopPropagation
+      />
+      <span class="group-arrow" class:expanded={renewablesRootExpanded} on:click={toggleRenewablesRoot}>▶</span>
+      <span class="group-title" on:click={toggleRenewablesRoot}>Renewables</span>
     </div>
 
     {#if renewablesRootExpanded}
@@ -149,9 +258,15 @@
 
   <!-- Data Centres Root Folder -->
   <div class="layer-group root-group">
-    <div class="layer-group-header root-header" on:click={toggleDataCentresRoot}>
-      <span class="group-arrow" class:expanded={dataCentresRootExpanded}>▶</span>
-      <span class="group-title">Data Centres</span>
+    <div class="layer-group-header root-header">
+      <input
+        type="checkbox"
+        checked={allDataCentresChecked}
+        on:change={toggleAllDataCentres}
+        on:click|stopPropagation
+      />
+      <span class="group-arrow" class:expanded={dataCentresRootExpanded} on:click={toggleDataCentresRoot}>▶</span>
+      <span class="group-title" on:click={toggleDataCentresRoot}>Data Centres</span>
     </div>
 
     {#if dataCentresRootExpanded}
@@ -163,6 +278,49 @@
             on:change={toggleDataCentres}
           />
           <span>Planit Data Centre Apps</span>
+        </label>
+      </div>
+    {/if}
+  </div>
+
+  <!-- TRP Projects Root Folder -->
+  <div class="layer-group root-group">
+    <div class="layer-group-header root-header">
+      <input
+        type="checkbox"
+        checked={allTRPChecked}
+        on:change={toggleAllTRP}
+        on:click|stopPropagation
+      />
+      <span class="group-arrow" class:expanded={trpRootExpanded} on:click={toggleTRPRoot}>▶</span>
+      <span class="group-title" on:click={toggleTRPRoot}>TRP Projects</span>
+    </div>
+
+    {#if trpRootExpanded}
+      <div class="layer-group-content">
+        <label class="layer-item">
+          <input
+            type="checkbox"
+            bind:checked={showTRPCommercial}
+            on:change={toggleTRPCommercial}
+          />
+          <span>Commercial, Economic and Industrial</span>
+        </label>
+        <label class="layer-item">
+          <input
+            type="checkbox"
+            bind:checked={showTRPEnergy}
+            on:change={toggleTRPEnergy}
+          />
+          <span>Energy, Digital and Infrastructure</span>
+        </label>
+        <label class="layer-item">
+          <input
+            type="checkbox"
+            bind:checked={showTRPResidential}
+            on:change={toggleTRPResidential}
+          />
+          <span>Residential and Strategic Land</span>
         </label>
       </div>
     {/if}
@@ -229,7 +387,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    cursor: pointer;
     padding: 6px 0;
     font-size: 13px;
     font-weight: 500;
@@ -242,7 +399,13 @@
     font-size: 14px;
   }
 
-  .layer-group-header:hover {
+  .layer-group-header .group-arrow,
+  .layer-group-header .group-title {
+    cursor: pointer;
+  }
+
+  .layer-group-header .group-arrow:hover,
+  .layer-group-header .group-title:hover {
     color: var(--primary-color);
   }
 
