@@ -173,5 +173,30 @@ class SupabaseDB:
 
         return results
 
+    def get_repd_data(self) -> List[Dict[str, Any]]:
+        """Get REPD Publication Q3 2025 data with lat/lng conversion, filtered for Solar (>=3MW), Wind Onshore, and Battery"""
+        # Use PostGIS to convert geometry to lat/lng
+        query = """
+            SELECT
+                *,
+                ST_Y(ST_Transform(geom, 4326)) as lat,
+                ST_X(ST_Transform(geom, 4326)) as lng
+            FROM "REPD_Publication_Q3_2025"
+            WHERE (
+                (
+                    "Technology Type" = 'Solar Photovoltaics'
+                    AND "Installed Capacity (MWelec)" IS NOT NULL
+                    AND TRIM("Installed Capacity (MWelec)") != ''
+                    AND CAST("Installed Capacity (MWelec)" AS FLOAT) >= 3
+                )
+                OR "Technology Type" = 'Wind Onshore'
+                OR "Technology Type" = 'Battery'
+            )
+            ORDER BY "Site Name"
+        """
+        results = self.execute_query(query)
+
+        return results
+
 # Global database instance
 db = SupabaseDB()

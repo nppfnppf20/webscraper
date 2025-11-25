@@ -95,6 +95,7 @@
     background: var(--light-gray);
     border-bottom: 1px solid var(--border-color);
     position: relative;
+    z-index: 10000;
   }
 
   .dropdown {

@@ -8,13 +8,19 @@
     createRenewablesMarker,
     filterRenewables,
     createDataCentresMarker,
-    filterDataCentres
+    filterDataCentres,
+    createREPDSolarMarker,
+    createREPDWindMarker,
+    createREPDBatteryMarker
   } from '../utils/mapUtils.js';
 
   let mapContainer = null;
   let map = null;
   let renewablesLayer = null;
   let dataCentresLayer = null;
+  let repdSolarLayer = null;
+  let repdWindLayer = null;
+  let repdBatteryLayer = null;
   let loading = true;
   let error = '';
 
@@ -35,6 +41,9 @@
       // Create empty layer groups
       renewablesLayer = L.layerGroup().addTo(map);
       dataCentresLayer = L.layerGroup().addTo(map);
+      repdSolarLayer = L.layerGroup().addTo(map);
+      repdWindLayer = L.layerGroup().addTo(map);
+      repdBatteryLayer = L.layerGroup().addTo(map);
 
       // Fetch renewables data
       const renewablesResponse = await fetch(`${API_BASE_URL}/planit/renewables-test2`);
@@ -74,6 +83,39 @@
         dataCentresLayer.addLayer(marker);
       });
 
+      // Fetch REPD data
+      const repdResponse = await fetch(`${API_BASE_URL}/repd`);
+      if (!repdResponse.ok) throw new Error(`HTTP ${repdResponse.status}`);
+      const repdRawData = await repdResponse.json();
+
+      // Filter for records with coordinates
+      const repdWithCoords = filterRecordsWithCoordinates(repdRawData);
+
+      // Split by technology type
+      const solarProjects = repdWithCoords.filter(r => r['Technology Type'] === 'Solar Photovoltaics');
+      const windProjects = repdWithCoords.filter(r => r['Technology Type'] === 'Wind Onshore');
+      const batteryProjects = repdWithCoords.filter(r => r['Technology Type'] === 'Battery');
+
+      console.log(`☀️ Loaded ${solarProjects.length} Solar projects`);
+      console.log(`💨 Loaded ${windProjects.length} Wind Onshore projects`);
+      console.log(`🔋 Loaded ${batteryProjects.length} Battery projects`);
+
+      // Create markers for each technology type
+      solarProjects.forEach(record => {
+        const marker = createREPDSolarMarker(L, record);
+        repdSolarLayer.addLayer(marker);
+      });
+
+      windProjects.forEach(record => {
+        const marker = createREPDWindMarker(L, record);
+        repdWindLayer.addLayer(marker);
+      });
+
+      batteryProjects.forEach(record => {
+        const marker = createREPDBatteryMarker(L, record);
+        repdBatteryLayer.addLayer(marker);
+      });
+
       loading = false;
 
       // Fix map size after rendering
@@ -107,7 +149,7 @@
     {/if}
 
     {#if map && !loading}
-      <LayerControl {map} {renewablesLayer} {dataCentresLayer} />
+      <LayerControl {map} {renewablesLayer} {dataCentresLayer} {repdSolarLayer} {repdWindLayer} {repdBatteryLayer} />
     {/if}
   </div>
 </div>

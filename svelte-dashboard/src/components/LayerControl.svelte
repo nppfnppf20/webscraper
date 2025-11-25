@@ -4,12 +4,17 @@
   export let map = null;
   export let renewablesLayer = null;
   export let dataCentresLayer = null;
+  export let repdSolarLayer = null;
+  export let repdWindLayer = null;
+  export let repdBatteryLayer = null;
 
   let showRenewables = true;
   let showDataCentres = true;
+  let showREPDSolar = true;
+  let showREPDWind = true;
+  let showREPDBattery = true;
 
   function toggleRenewables() {
-    // showRenewables is already updated by bind:checked
     if (renewablesLayer && map) {
       if (showRenewables) {
         map.addLayer(renewablesLayer);
@@ -20,12 +25,41 @@
   }
 
   function toggleDataCentres() {
-    // showDataCentres is already updated by bind:checked
     if (dataCentresLayer && map) {
       if (showDataCentres) {
         map.addLayer(dataCentresLayer);
       } else {
         map.removeLayer(dataCentresLayer);
+      }
+    }
+  }
+
+  function toggleREPDSolar() {
+    if (repdSolarLayer && map) {
+      if (showREPDSolar) {
+        map.addLayer(repdSolarLayer);
+      } else {
+        map.removeLayer(repdSolarLayer);
+      }
+    }
+  }
+
+  function toggleREPDWind() {
+    if (repdWindLayer && map) {
+      if (showREPDWind) {
+        map.addLayer(repdWindLayer);
+      } else {
+        map.removeLayer(repdWindLayer);
+      }
+    }
+  }
+
+  function toggleREPDBattery() {
+    if (repdBatteryLayer && map) {
+      if (showREPDBattery) {
+        map.addLayer(repdBatteryLayer);
+      } else {
+        map.removeLayer(repdBatteryLayer);
       }
     }
   }
@@ -52,6 +86,30 @@
       on:change={toggleDataCentres}
     />
     <span>Data Centres</span>
+  </label>
+  <label class="layer-item">
+    <input
+      type="checkbox"
+      bind:checked={showREPDSolar}
+      on:change={toggleREPDSolar}
+    />
+    <span class="solar-label">☀️ Solar PV</span>
+  </label>
+  <label class="layer-item">
+    <input
+      type="checkbox"
+      bind:checked={showREPDWind}
+      on:change={toggleREPDWind}
+    />
+    <span class="wind-label">💨 Wind Onshore</span>
+  </label>
+  <label class="layer-item">
+    <input
+      type="checkbox"
+      bind:checked={showREPDBattery}
+      on:change={toggleREPDBattery}
+    />
+    <span class="battery-label">🔋 Battery</span>
   </label>
 </div>
 

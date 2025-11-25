@@ -44,6 +44,10 @@ def get_planit_renewables():
 def get_planit_renewables_test2():
     return jsonify(db.get_planit_renewables_test2())
 
+@app.route("/api/repd")
+def get_repd():
+    return jsonify(db.get_repd_data())
+
 # --- Refresh (re-scrape) endpoints ---
 _locks: dict[str, threading.Lock] = {
     k: threading.Lock() for k in [

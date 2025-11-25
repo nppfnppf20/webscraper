@@ -134,3 +134,93 @@ export function formatDataCentresPopupContent(record) {
     </div>
   `;
 }
+
+/**
+ * Create a Leaflet marker for a REPD Solar project (yellow/orange marker)
+ */
+export function createREPDSolarMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+
+  const orangeIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const marker = L.marker([lat, lng], { icon: orangeIcon });
+  marker.bindPopup(formatREPDPopupContent(record));
+  return marker;
+}
+
+/**
+ * Create a Leaflet marker for a REPD Wind project (blue marker)
+ */
+export function createREPDWindMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+
+  const blueIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const marker = L.marker([lat, lng], { icon: blueIcon });
+  marker.bindPopup(formatREPDPopupContent(record));
+  return marker;
+}
+
+/**
+ * Create a Leaflet marker for a REPD Battery project (violet marker)
+ */
+export function createREPDBatteryMarker(L, record) {
+  const lat = parseFloat(record.lat);
+  const lng = parseFloat(record.lng);
+
+  const violetIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const marker = L.marker([lat, lng], { icon: violetIcon });
+  marker.bindPopup(formatREPDPopupContent(record));
+  return marker;
+}
+
+/**
+ * Format popup content for a REPD project
+ */
+export function formatREPDPopupContent(record) {
+  const siteName = record['Site Name'] || 'Unknown Site';
+  const operator = record['Operator (or Applicant)'] || 'Unknown';
+  const techType = record['Technology Type'] || 'Unknown';
+  const capacity = record['Installed Capacity (MWelec)'] || 'N/A';
+  const status = record['Development Status'] || 'Unknown';
+  const address = record['Address'] || 'No address';
+  const county = record['County'] || '';
+  const region = record['Region'] || '';
+  const operational = record['Operational'] || 'N/A';
+
+  return `
+    <div style="max-width: 300px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #2e7d32;">⚡ ${siteName}</h3>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Operator:</strong> ${operator}</p>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Technology:</strong> ${techType}</p>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Capacity:</strong> ${capacity} MW</p>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Status:</strong> ${status}</p>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Operational:</strong> ${operational}</p>
+      <p style="margin: 5px 0; font-size: 12px;"><strong>Location:</strong> ${address}${county ? ', ' + county : ''}${region ? ', ' + region : ''}</p>
+    </div>
+  `;
+}
