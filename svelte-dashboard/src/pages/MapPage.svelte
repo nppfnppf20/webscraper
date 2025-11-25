@@ -44,15 +44,15 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      // Create empty layer groups
-      renewablesLayer = L.layerGroup().addTo(map);
-      dataCentresLayer = L.layerGroup().addTo(map);
-      repdSolarLayer = L.layerGroup().addTo(map);
-      repdWindLayer = L.layerGroup().addTo(map);
-      repdBatteryLayer = L.layerGroup().addTo(map);
-      trpCommercialLayer = L.layerGroup().addTo(map);
-      trpEnergyLayer = L.layerGroup().addTo(map);
-      trpResidentialLayer = L.layerGroup().addTo(map);
+      // Create empty layer groups (not added to map initially)
+      renewablesLayer = L.layerGroup();
+      dataCentresLayer = L.layerGroup();
+      repdSolarLayer = L.layerGroup();
+      repdWindLayer = L.layerGroup();
+      repdBatteryLayer = L.layerGroup();
+      trpCommercialLayer = L.layerGroup();
+      trpEnergyLayer = L.layerGroup();
+      trpResidentialLayer = L.layerGroup();
 
       // Fetch renewables data
       const renewablesResponse = await fetch(`${API_BASE_URL}/planit/renewables-test2`);

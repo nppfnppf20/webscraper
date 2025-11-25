@@ -11,14 +11,14 @@
   export let trpEnergyLayer = null;
   export let trpResidentialLayer = null;
 
-  let showRenewables = true;
-  let showDataCentres = true;
-  let showREPDSolar = true;
-  let showREPDWind = true;
-  let showREPDBattery = true;
-  let showTRPCommercial = true;
-  let showTRPEnergy = true;
-  let showTRPResidential = true;
+  let showRenewables = false;
+  let showDataCentres = false;
+  let showREPDSolar = false;
+  let showREPDWind = false;
+  let showREPDBattery = false;
+  let showTRPCommercial = false;
+  let showTRPEnergy = false;
+  let showTRPResidential = false;
 
   let renewablesRootExpanded = true;
   let dataCentresRootExpanded = true;
