@@ -136,64 +136,94 @@ export function formatDataCentresPopupContent(record) {
 }
 
 /**
- * Create a Leaflet marker for a REPD Solar project (yellow/orange marker)
+ * Get marker style based on development status
+ */
+function getStatusMarkerStyle(status) {
+  const normalizedStatus = status?.toUpperCase().trim() || 'UNKNOWN';
+
+  // Define styles for each status: color, radius, fillOpacity, weight, dashArray
+  const styles = {
+    'OPERATIONAL': { color: '#2e7d32', fillColor: '#4caf50', radius: 8, fillOpacity: 0.8, weight: 2, dashArray: null },
+    'UNDER CONSTRUCTION': { color: '#f57c00', fillColor: '#ff9800', radius: 8, fillOpacity: 0.8, weight: 2, dashArray: '5,5' },
+    'PLANNING PERMISSION GRANTED': { color: '#1976d2', fillColor: '#2196f3', radius: 7, fillOpacity: 0.7, weight: 2, dashArray: null },
+    'PLANNING APPLICATION SUBMITTED': { color: '#7b1fa2', fillColor: '#9c27b0', radius: 6, fillOpacity: 0.6, weight: 2, dashArray: '3,3' },
+    'PLANNING PERMISSION REFUSED': { color: '#c62828', fillColor: '#f44336', radius: 7, fillOpacity: 0.7, weight: 3, dashArray: null },
+    'APPEAL GRANTED': { color: '#00796b', fillColor: '#009688', radius: 7, fillOpacity: 0.7, weight: 2, dashArray: null },
+    'APPEAL REFUSED': { color: '#d32f2f', fillColor: '#e57373', radius: 6, fillOpacity: 0.7, weight: 3, dashArray: '10,5' },
+    'REVISED': { color: '#455a64', fillColor: '#78909c', radius: 6, fillOpacity: 0.6, weight: 2, dashArray: '2,2' }
+  };
+
+  return styles[normalizedStatus] || { color: '#616161', fillColor: '#9e9e9e', radius: 5, fillOpacity: 0.5, weight: 1, dashArray: null };
+}
+
+/**
+ * Create a Leaflet marker for a REPD Solar project (circle markers with status-based styling)
  */
 export function createREPDSolarMarker(L, record) {
   const lat = parseFloat(record.lat);
   const lng = parseFloat(record.lng);
+  const status = record['Development Status'];
+  const style = getStatusMarkerStyle(status);
 
-  const orangeIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  // Use orange base color for solar
+  const marker = L.circleMarker([lat, lng], {
+    radius: style.radius,
+    fillColor: '#ff9800', // Orange for solar
+    color: style.color, // Border color based on status
+    weight: style.weight,
+    opacity: 1,
+    fillOpacity: style.fillOpacity,
+    dashArray: style.dashArray
   });
 
-  const marker = L.marker([lat, lng], { icon: orangeIcon });
   marker.bindPopup(formatREPDPopupContent(record));
   return marker;
 }
 
 /**
- * Create a Leaflet marker for a REPD Wind project (blue marker)
+ * Create a Leaflet marker for a REPD Wind project (circle markers with status-based styling)
  */
 export function createREPDWindMarker(L, record) {
   const lat = parseFloat(record.lat);
   const lng = parseFloat(record.lng);
+  const status = record['Development Status'];
+  const style = getStatusMarkerStyle(status);
 
-  const blueIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  // Use blue base color for wind
+  const marker = L.circleMarker([lat, lng], {
+    radius: style.radius,
+    fillColor: '#2196f3', // Blue for wind
+    color: style.color, // Border color based on status
+    weight: style.weight,
+    opacity: 1,
+    fillOpacity: style.fillOpacity,
+    dashArray: style.dashArray
   });
 
-  const marker = L.marker([lat, lng], { icon: blueIcon });
   marker.bindPopup(formatREPDPopupContent(record));
   return marker;
 }
 
 /**
- * Create a Leaflet marker for a REPD Battery project (violet marker)
+ * Create a Leaflet marker for a REPD Battery project (circle markers with status-based styling)
  */
 export function createREPDBatteryMarker(L, record) {
   const lat = parseFloat(record.lat);
   const lng = parseFloat(record.lng);
+  const status = record['Development Status'];
+  const style = getStatusMarkerStyle(status);
 
-  const violetIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  // Use violet base color for battery
+  const marker = L.circleMarker([lat, lng], {
+    radius: style.radius,
+    fillColor: '#9c27b0', // Violet for battery
+    color: style.color, // Border color based on status
+    weight: style.weight,
+    opacity: 1,
+    fillOpacity: style.fillOpacity,
+    dashArray: style.dashArray
   });
 
-  const marker = L.marker([lat, lng], { icon: violetIcon });
   marker.bindPopup(formatREPDPopupContent(record));
   return marker;
 }

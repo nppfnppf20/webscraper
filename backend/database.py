@@ -192,6 +192,16 @@ class SupabaseDB:
                 OR "Technology Type" = 'Wind Onshore'
                 OR "Technology Type" = 'Battery'
             )
+            AND UPPER(TRIM("Development Status")) IN (
+                'OPERATIONAL',
+                'PLANNING PERMISSION REFUSED',
+                'APPEAL REFUSED',
+                'REVISED',
+                'APPEAL GRANTED',
+                'PLANNING APPLICATION SUBMITTED',
+                'PLANNING PERMISSION GRANTED',
+                'UNDER CONSTRUCTION'
+            )
             ORDER BY "Site Name"
         """
         results = self.execute_query(query)
