@@ -35,6 +35,14 @@
       // Import Leaflet dynamically (client-side only)
       const L = (await import('leaflet')).default;
 
+      // Fix default marker icon paths for production builds
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
+
       // Initialize map
       map = L.map(mapContainer).setView([54.5, -2.5], 6); // Center on UK
 
