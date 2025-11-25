@@ -244,5 +244,10 @@ class SupabaseDB:
         """
         return self.execute_query(query)
 
+    def update_renewables_dismissed_status(self, record_id: int, dismissed: bool) -> bool:
+        """Update the dismissed status of a renewables record"""
+        query = "UPDATE planit_renewables SET dismissed = %s WHERE id = %s"
+        return self.execute_raw(query, (dismissed, record_id))
+
 # Global database instance
 db = SupabaseDB()

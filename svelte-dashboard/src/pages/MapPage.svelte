@@ -65,10 +65,13 @@
       // Filter for records with coordinates
       const renewablesWithCoords = filterRecordsWithCoordinates(renewablesFiltered);
 
-      console.log(`⚡ Loaded ${renewablesWithCoords.length} renewables projects with coordinates (out of ${renewablesFiltered.length} filtered)`);
+      // Filter out dismissed records
+      const renewablesNotDismissed = renewablesWithCoords.filter(record => !record.dismissed);
+
+      console.log(`⚡ Loaded ${renewablesNotDismissed.length} renewables projects with coordinates (out of ${renewablesFiltered.length} filtered, ${renewablesWithCoords.length - renewablesNotDismissed.length} dismissed)`);
 
       // Create markers for each renewables record
-      renewablesWithCoords.forEach(record => {
+      renewablesNotDismissed.forEach(record => {
         const marker = createRenewablesMarker(L, record);
         renewablesLayer.addLayer(marker);
       });

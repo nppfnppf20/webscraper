@@ -60,6 +60,18 @@ def get_trp_energy():
 def get_trp_residential():
     return jsonify(db.get_trp_residential())
 
+@app.route("/api/planit/renewables/<int:record_id>/dismiss", methods=["PATCH"])
+def update_renewables_dismissed(record_id):
+    data = request.get_json()
+    dismissed = data.get("dismissed", False)
+
+    success = db.update_renewables_dismissed_status(record_id, dismissed)
+
+    if success:
+        return jsonify({"ok": True, "id": record_id, "dismissed": dismissed})
+    else:
+        return jsonify({"ok": False, "error": "Failed to update record"}), 500
+
 # --- Refresh (re-scrape) endpoints ---
 _locks: dict[str, threading.Lock] = {
     k: threading.Lock() for k in [

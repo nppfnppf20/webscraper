@@ -22,6 +22,29 @@
     return await response.json();
   }
 
+  async function toggleDismiss(recordId, currentDismissed) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/planit/renewables/${recordId}/dismiss`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dismissed: !currentDismissed })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = await response.json();
+
+      // Update local state optimistically
+      renewables = renewables.map(item =>
+        item.id === recordId ? { ...item, dismissed: result.dismissed } : item
+      );
+
+      return result;
+    } catch (e) {
+      console.error('Failed to toggle dismiss:', e);
+      throw e;
+    }
+  }
+
   // Filter function for medium/large projects and excluding conditions
   function filterRenewables(data) {
     return data.filter(project => {
@@ -47,7 +70,33 @@
     } finally {
       loading = false;
     }
+
+    // Add event delegation for dismiss checkboxes
+    document.addEventListener('change', handleDismissChange);
+
+    // Cleanup on component destroy
+    return () => {
+      document.removeEventListener('change', handleDismissChange);
+    };
   });
+
+  // Handle dismiss checkbox changes
+  async function handleDismissChange(e) {
+    if (e.target.classList.contains('dismiss-input')) {
+      const recordId = parseInt(e.target.dataset.recordId);
+      const currentDismissed = e.target.dataset.dismissed === 'true';
+
+      try {
+        await toggleDismiss(recordId, currentDismissed);
+        // Update the data attribute for next click
+        e.target.dataset.dismissed = (!currentDismissed).toString();
+      } catch (err) {
+        // Revert checkbox on error
+        e.target.checked = currentDismissed;
+        alert('Failed to update dismiss status');
+      }
+    }
+  }
 
   // Refresh function
   async function refreshNow() {
@@ -137,9 +186,27 @@
       sortable: true,
       width: '25%',
       render: (value, item) => `
-        <div class="description" title="${value || ''}">
+        <div class="description ${item.dismissed ? 'dismissed' : ''}" title="${value || ''}">
           ${truncateText(value, 120)}
         </div>
+      `
+    },
+    {
+      key: 'dismissed',
+      label: 'Dismiss',
+      sortable: false,
+      width: '6%',
+      align: 'center',
+      render: (value, item) => `
+        <label class="dismiss-checkbox">
+          <input
+            type="checkbox"
+            ${value ? 'checked' : ''}
+            data-record-id="${item.id}"
+            data-dismissed="${value ? 'true' : 'false'}"
+            class="dismiss-input"
+          />
+        </label>
       `
     },
     {
@@ -513,6 +580,37 @@
   :global(.link-button:hover) {
     background-color: #0b5ed7;
     color: white;
+  }
+
+  /* Dismiss checkbox styling */
+  :global(.dismiss-checkbox) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  :global(.dismiss-input) {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  /* Dismissed row styling */
+  :global(tr:has(.dismiss-input:checked)) {
+    opacity: 0.5;
+    background-color: #f8f9fa !important;
+  }
+
+  :global(tr:has(.dismiss-input:checked) td) {
+    color: #6c757d !important;
+    text-decoration: line-through;
+  }
+
+  :global(tr:has(.dismiss-input:checked) .dismiss-checkbox) {
+    opacity: 1;
+    text-decoration: none;
   }
 
   /* Responsive design */
