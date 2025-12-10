@@ -84,6 +84,60 @@ class SupabaseDB:
 
     def execute_upsert(self, table: str, data: List[Dict[str, Any]], conflict_columns: List[str] = None) -> bool:
         """Upsert data into table (insert or update on conflict)"""
+        
+        # Use direct PostgreSQL for custom schemas (Supabase client only works with 'public')
+        if self.schema != 'public' and self.database_url:
+            try:
+                with self.get_connection() as conn:
+                    with conn.cursor() as cursor:
+                        for record in data:
+                            # Get column names and values
+                            columns = list(record.keys())
+                            values = [record[col] for col in columns]
+                            placeholders = ', '.join(['%s'] * len(columns))
+                            columns_str = ', '.join([f'"{col}"' for col in columns])
+                            
+                            # Determine conflict columns (default to 'uid' if exists, otherwise first unique column)
+                            if not conflict_columns:
+                                if 'uid' in columns:
+                                    conflict_columns = ['uid']
+                                elif 'peeringdb_id' in columns:
+                                    conflict_columns = ['peeringdb_id']
+                                else:
+                                    # If no obvious unique column, use all columns (will insert only)
+                                    conflict_columns = columns
+                            
+                            conflict_str = ', '.join([f'"{col}"' for col in conflict_columns])
+                            
+                            # Build update clause for ON CONFLICT
+                            update_cols = [col for col in columns if col not in conflict_columns and col != 'id']
+                            update_str = ', '.join([f'"{col}" = EXCLUDED."{col}"' for col in update_cols])
+                            
+                            # Build upsert query
+                            if update_str:
+                                query = f"""
+                                    INSERT INTO {table} ({columns_str})
+                                    VALUES ({placeholders})
+                                    ON CONFLICT ({conflict_str}) 
+                                    DO UPDATE SET {update_str}
+                                """
+                            else:
+                                # If no columns to update, just do nothing on conflict
+                                query = f"""
+                                    INSERT INTO {table} ({columns_str})
+                                    VALUES ({placeholders})
+                                    ON CONFLICT ({conflict_str}) DO NOTHING
+                                """
+                            
+                            cursor.execute(query, values)
+                        
+                        conn.commit()
+                        return True
+            except Exception as e:
+                print(f"PostgreSQL upsert failed: {e}")
+                return False
+        
+        # Use Supabase client for 'public' schema
         try:
             if self.supabase:
                 # Use simple upsert without on_conflict specification
