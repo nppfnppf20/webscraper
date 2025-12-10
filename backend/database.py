@@ -342,5 +342,192 @@ class SupabaseDB:
         query = "UPDATE planit_renewables SET dismissed = %s WHERE id = %s"
         return self.execute_raw(query, (dismissed, record_id))
 
+    # ============================================================
+    # Spatial/PostGIS Query Methods
+    # ============================================================
+
+    def get_projects_within_radius(self, lat: float, lng: float, radius_km: float = 10.0, 
+                                   table: str = 'planit_renewables') -> List[Dict[str, Any]]:
+        """
+        Find all projects within X km of a specific lat/lng point
+        
+        Args:
+            lat: Latitude of center point
+            lng: Longitude of center point
+            radius_km: Search radius in kilometers
+            table: Table name (e.g., 'planit_renewables', 'planit_datacentres')
+        
+        Returns:
+            List of projects with distance_km field added
+        """
+        query = f"""
+            SELECT 
+                *,
+                ST_Distance(
+                    geom::geography,
+                    ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography
+                ) / 1000 as distance_km
+            FROM {table}
+            WHERE geom IS NOT NULL
+            AND ST_DWithin(
+                geom::geography,
+                ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography,
+                %s
+            )
+            ORDER BY distance_km ASC
+        """
+        radius_meters = radius_km * 1000
+        return self.execute_query(query, (lng, lat, lng, lat, radius_meters))
+
+    def get_projects_near_my_sites(self, distance_km: float = 5.0, 
+                                   scraped_table: str = 'planit_renewables',
+                                   my_projects_table: str = 'my_projects',
+                                   my_projects_schema: str = 'public',
+                                   only_new: bool = True) -> List[Dict[str, Any]]:
+        """
+        Find scraped projects within X km of any of your project sites
+        
+        Args:
+            distance_km: Search radius in kilometers
+            scraped_table: Scraped data table (e.g., 'planit_renewables')
+            my_projects_table: Your projects table name
+            my_projects_schema: Schema containing your projects
+            only_new: Only return projects marked as new
+        
+        Returns:
+            List of nearby projects with distance and your project info
+        """
+        new_filter = "AND scraped.is_new = TRUE" if only_new else ""
+        
+        query = f"""
+            SELECT 
+                scraped.*,
+                my_proj.id as my_project_id,
+                my_proj.name as my_project_name,
+                ST_Distance(
+                    scraped.geom::geography,
+                    my_proj.geom::geography
+                ) / 1000 as distance_km
+            FROM {self.schema}.{scraped_table} scraped
+            CROSS JOIN {my_projects_schema}.{my_projects_table} my_proj
+            WHERE scraped.geom IS NOT NULL
+            AND my_proj.geom IS NOT NULL
+            AND ST_DWithin(
+                scraped.geom::geography,
+                my_proj.geom::geography,
+                %s
+            )
+            {new_filter}
+            ORDER BY distance_km ASC
+        """
+        return self.execute_query(query, (distance_km * 1000,))
+
+    def get_projects_between_tables(self, table1: str = 'planit_renewables', 
+                                    table2: str = 'planit_datacentres',
+                                    distance_km: float = 5.0) -> List[Dict[str, Any]]:
+        """
+        Find pairs of projects from two different tables that are close together
+        Example: Find datacentres near renewable projects
+        
+        Args:
+            table1: First table name
+            table2: Second table name  
+            distance_km: Maximum distance between projects
+            
+        Returns:
+            List of project pairs with distance
+        """
+        query = f"""
+            SELECT DISTINCT
+                t1.uid as table1_uid,
+                t1.name as table1_name,
+                t1.area_name as table1_area,
+                t2.uid as table2_uid,
+                t2.name as table2_name,
+                t2.area_name as table2_area,
+                ST_Distance(t1.geom::geography, t2.geom::geography) / 1000 as distance_km
+            FROM {self.schema}.{table1} t1
+            CROSS JOIN {self.schema}.{table2} t2
+            WHERE t1.geom IS NOT NULL 
+            AND t2.geom IS NOT NULL
+            AND ST_DWithin(
+                t1.geom::geography,
+                t2.geom::geography,
+                %s
+            )
+            ORDER BY distance_km ASC
+        """
+        return self.execute_query(query, (distance_km * 1000,))
+
+    def get_project_density_by_area(self, table: str = 'planit_renewables', 
+                                   grid_size_km: float = 10.0) -> List[Dict[str, Any]]:
+        """
+        Get density of projects in grid cells across the country
+        Useful for heatmaps
+        
+        Args:
+            table: Table to analyze
+            grid_size_km: Size of grid cells in kilometers (approximate)
+            
+        Returns:
+            List of grid cells with project counts and center coordinates
+        """
+        # Convert km to degrees (very approximate: 1 degree ≈ 111km at equator)
+        grid_degrees = grid_size_km / 111.0
+        
+        query = f"""
+            SELECT 
+                FLOOR(ST_X(geom) / %s) * %s as grid_lng,
+                FLOOR(ST_Y(geom) / %s) * %s as grid_lat,
+                COUNT(*) as project_count,
+                AVG(ST_X(geom)) as center_lng,
+                AVG(ST_Y(geom)) as center_lat
+            FROM {self.schema}.{table}
+            WHERE geom IS NOT NULL
+            GROUP BY grid_lng, grid_lat
+            HAVING COUNT(*) > 0
+            ORDER BY project_count DESC
+        """
+        return self.execute_query(query, (grid_degrees, grid_degrees, grid_degrees, grid_degrees))
+
+    def get_geometry_coverage_stats(self) -> List[Dict[str, Any]]:
+        """
+        Get statistics on geometry coverage across all scraper tables
+        Useful for monitoring data quality
+        
+        Returns:
+            List with coverage stats for each table
+        """
+        query = """
+            SELECT 
+                'planit_renewables' as table_name,
+                COUNT(*) as total_records,
+                COUNT(geom) as records_with_geometry,
+                ROUND(COUNT(geom)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as geometry_coverage_pct
+            FROM planit_renewables
+            UNION ALL
+            SELECT 
+                'planit_datacentres' as table_name,
+                COUNT(*) as total_records,
+                COUNT(geom) as records_with_geometry,
+                ROUND(COUNT(geom)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as geometry_coverage_pct
+            FROM planit_datacentres
+            UNION ALL
+            SELECT 
+                'peeringdb_fac_gb' as table_name,
+                COUNT(*) as total_records,
+                COUNT(geom) as records_with_geometry,
+                ROUND(COUNT(geom)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as geometry_coverage_pct
+            FROM peeringdb_fac_gb
+            UNION ALL
+            SELECT 
+                'peeringdb_ix_gb' as table_name,
+                COUNT(*) as total_records,
+                COUNT(geom) as records_with_geometry,
+                ROUND(COUNT(geom)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as geometry_coverage_pct
+            FROM peeringdb_ix_gb
+        """
+        return self.execute_query(query)
+
 # Global database instance
 db = SupabaseDB()
