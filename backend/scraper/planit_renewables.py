@@ -196,7 +196,17 @@ def normalize(record: Dict, geometry: Optional[Dict] = None, *, enable_geocode: 
     lng_val = props.get("lng", props.get("longitude", ""))
     lat_f = _to_float(lat_val)
     lng_f = _to_float(lng_val)
-    # Skip GeoJSON fallback entirely for speed
+    
+    # Extract from GeoJSON geometry if available (fast - no external API call)
+    if (lat_f is None or lng_f is None) and geometry:
+        if isinstance(geometry, dict):
+            coords = geometry.get("coordinates", [])
+            geom_type = geometry.get("type", "")
+            # GeoJSON Point format: [lng, lat]
+            if geom_type == "Point" and len(coords) >= 2:
+                lng_f = _to_float(coords[0])
+                lat_f = _to_float(coords[1])
+    
     # Postcode geocode fallback via postcodes.io (only if still missing)
     if enable_geocode and (lat_f is None or lng_f is None):
         pc = str(props.get("postcode") or "").strip()
