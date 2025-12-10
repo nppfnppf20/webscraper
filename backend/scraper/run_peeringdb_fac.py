@@ -47,16 +47,23 @@ if __name__ == "__main__":
     print("[PeeringDB Facilities] 🚀 Starting PeeringDB facilities fetch...")
 
     try:
-        # Read existing data from database
-        existing_records = db.execute_query("SELECT * FROM peeringdb_fac_gb")
-        existing_ids = set()
+        # Read existing data from database (only fetch the ID column for efficiency)
+        print("[PeeringDB Facilities] 📋 Checking existing records in database...")
+        try:
+            existing_records = db.execute_query("SELECT peeringdb_id FROM peeringdb_fac_gb")
+            existing_ids = set()
 
-        # Collect existing PeeringDB IDs
-        for row in existing_records:
-            if 'peeringdb_id' in row and row['peeringdb_id']:
-                existing_ids.add(str(row['peeringdb_id']))
+            # Collect existing PeeringDB IDs
+            for row in existing_records:
+                if 'peeringdb_id' in row and row['peeringdb_id']:
+                    existing_ids.add(str(row['peeringdb_id']))
 
-        print(f"[PeeringDB Facilities] 📋 Found {len(existing_records)} existing records in database")
+            print(f"[PeeringDB Facilities] 📋 Found {len(existing_records)} existing records in database")
+        except Exception as e:
+            print(f"[PeeringDB Facilities] ⚠️ Could not read existing records (table may not exist): {e}")
+            print(f"[PeeringDB Facilities] 📋 Assuming no existing records, will insert all")
+            existing_records = []
+            existing_ids = set()
 
         # Fetch facilities from PeeringDB API
         raw_facilities = fetch_facilities_gb()

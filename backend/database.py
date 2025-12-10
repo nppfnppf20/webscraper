@@ -49,11 +49,13 @@ class SupabaseDB:
             return conn
         return None
 
-    def execute_query(self, query: str, params: tuple = None) -> List[Dict[str, Any]]:
+    def execute_query(self, query: str, params: tuple = None, timeout_seconds: int = 30) -> List[Dict[str, Any]]:
         """Execute a SELECT query and return results as list of dicts"""
         try:
             with self.get_connection() as conn:
                 with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+                    # Set statement timeout to prevent hanging queries
+                    cursor.execute(f"SET statement_timeout = {timeout_seconds * 1000}")  # PostgreSQL uses milliseconds
                     cursor.execute(query, params)
                     return [dict(row) for row in cursor.fetchall()]
         except Exception as e:
@@ -92,11 +94,19 @@ class SupabaseDB:
                     with conn.cursor() as cursor:
                         for record in data:
                             # Filter out 'id' column (auto-increment primary key)
-                            # and empty/None values
-                            filtered_record = {
-                                k: v for k, v in record.items() 
-                                if k != 'id' and v is not None and v != ''
-                            }
+                            # and empty/None/invalid values
+                            filtered_record = {}
+                            for k, v in record.items():
+                                # Skip auto-increment id column
+                                if k == 'id':
+                                    continue
+                                # Skip various empty/invalid values
+                                if v is None or v == '' or v == 'None' or v == 'null' or v == 'NULL':
+                                    continue
+                                # Skip string representations of None for dates
+                                if isinstance(v, str) and v.strip().lower() in ('none', 'null', 'n/a', 'nan'):
+                                    continue
+                                filtered_record[k] = v
                             
                             if not filtered_record:
                                 continue  # Skip empty records
