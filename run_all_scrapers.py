@@ -62,7 +62,7 @@ def main():
     # Define scrapers to run
     scrapers = [
         ("backend.scraper.run_peeringdb", "PeeringDB IX (GB)"),
-        ("backend.scraper.run_peeringdb_fac", "PeeringDB Facilities (GB)"),
+        # ("backend.scraper.run_peeringdb_fac", "PeeringDB Facilities (GB)"),  # Disabled - not needed
         ("backend.scraper.run_planit_api_datacentres", "PlanIt Datacentres"),
         ("backend.scraper.run_planit_renewables_daily", "PlanIt Renewables"),
         ("backend.scraper.run_west_lindsey", "West Lindsey Planning"),
