@@ -91,9 +91,19 @@ class SupabaseDB:
                 with self.get_connection() as conn:
                     with conn.cursor() as cursor:
                         for record in data:
+                            # Filter out 'id' column (auto-increment primary key)
+                            # and empty/None values
+                            filtered_record = {
+                                k: v for k, v in record.items() 
+                                if k != 'id' and v is not None and v != ''
+                            }
+                            
+                            if not filtered_record:
+                                continue  # Skip empty records
+                            
                             # Get column names and values
-                            columns = list(record.keys())
-                            values = [record[col] for col in columns]
+                            columns = list(filtered_record.keys())
+                            values = [filtered_record[col] for col in columns]
                             placeholders = ', '.join(['%s'] * len(columns))
                             columns_str = ', '.join([f'"{col}"' for col in columns])
                             
@@ -103,9 +113,14 @@ class SupabaseDB:
                                     conflict_columns = ['uid']
                                 elif 'peeringdb_id' in columns:
                                     conflict_columns = ['peeringdb_id']
+                                elif 'reference' in columns:
+                                    conflict_columns = ['reference']
                                 else:
-                                    # If no obvious unique column, use all columns (will insert only)
-                                    conflict_columns = columns
+                                    # If no obvious unique column, skip to avoid errors
+                                    print(f"Warning: No unique column found for table {table}, inserting only")
+                                    query = f"INSERT INTO {table} ({columns_str}) VALUES ({placeholders})"
+                                    cursor.execute(query, values)
+                                    continue
                             
                             conflict_str = ', '.join([f'"{col}"' for col in conflict_columns])
                             
@@ -135,6 +150,8 @@ class SupabaseDB:
                         return True
             except Exception as e:
                 print(f"PostgreSQL upsert failed: {e}")
+                import traceback
+                traceback.print_exc()
                 return False
         
         # Use Supabase client for 'public' schema

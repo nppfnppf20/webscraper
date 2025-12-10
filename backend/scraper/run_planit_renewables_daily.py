@@ -87,8 +87,8 @@ def _map_fields_for_database(rows):
 
         # Only use fields that definitely exist in database (minimal set)
         field_mapping = {
-            'id': 'id',
-            'title': 'title',
+            'id': 'uid',  # Map CSV 'id' to database 'uid' (not auto-increment 'id')
+            'title': 'name',  # Map title to name field
             'description': 'description',
             'app_type': 'app_type',
             'app_size': 'app_size',
@@ -100,6 +100,7 @@ def _map_fields_for_database(rows):
             'authority': 'area_name',  # Map authority to area_name
             'lat': 'latitude',  # Map lat to latitude
             'lng': 'longitude',  # Map lng to longitude
+            'link': 'url',  # Map link to url
         }
 
         for csv_field, db_field in field_mapping.items():
