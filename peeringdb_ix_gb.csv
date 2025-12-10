@@ -1,15 +1,15 @@
 id,name,country,city,networks
-18,LINX LON1,GB,London,826
-53,LONAP,GB,London,291
-321,LINX LON2,GB,London,311
+18,LINX LON1,GB,London,828
+53,LONAP,GB,London,296
+321,LINX LON2,GB,London,310
 435,IXLeeds,GB,Leeds / Western Yorkshire,19
 583,LINX Manchester,GB,Manchester,139
 745,LINX Scotland,GB,Scotland,35
 985,BDX BTN1,GB,Brighton,0
-1016,LINX Wales,GB,Cardiff,11
+1016,LINX Wales,GB,Cardiff,10
 1302,IX Liverpool - MICT,GB,Liverpool,3
 1927,Equinix Manchester,GB,Manchester,22
-1997,Equinix London,GB,London,56
+1997,Equinix London,GB,London,57
 2704,IXP UK LON,GB,London,21
 2801,LONAP Multicast,GB,London,0
 2955,IX Liverpool - Baltic Bubble,GB,Liverpool,3
@@ -20,7 +20,7 @@ id,name,country,city,networks
 3278,IXBradford,GB,Bradford,9
 3373,NCL-IX,GB,Newcastle,6
 3732,RapidIX LON1,GB,London,8
-3821,BGP.Exchange - London,GB,London,81
+3821,BGP.Exchange - London,GB,London,86
 3877,SBIX London,GB,London,1
 4040,Edge IX Birmingham,GB,Birmingham,1
 4073,BGPHaus,GB,London,1

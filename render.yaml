@@ -26,3 +26,20 @@ services:
         value: production
       - key: VITE_API_BASE_URL
         value: https://web-scraper-api-vnue.onrender.com/api
+
+  # Cron job to run all scrapers daily
+  - type: cron
+    name: daily-scraper
+    env: python
+    buildCommand: pip install -r requirements.txt
+    schedule: "0 9 * * *"  # Run at 9 AM GMT/UTC daily
+    command: python run_all_scrapers.py
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
