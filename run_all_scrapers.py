@@ -4,13 +4,11 @@ This is designed to be run by Render cron jobs.
 """
 import sys
 import time
+import subprocess
 from pathlib import Path
 
-# Add backend to path so we can import scrapers
-sys.path.insert(0, str(Path(__file__).parent))
-
 def run_scraper(module_name: str, description: str):
-    """Run a scraper module and report results"""
+    """Run a scraper module as a subprocess and report results"""
     print(f"\n{'='*60}")
     print(f"Running: {description}")
     print(f"Module: {module_name}")
@@ -18,16 +16,33 @@ def run_scraper(module_name: str, description: str):
 
     start = time.time()
     try:
-        # Import and run the scraper module
-        module = __import__(module_name, fromlist=[''])
-
-        # If the module has a main() function, call it
-        if hasattr(module, 'main'):
-            module.main()
+        # Run the scraper as a subprocess so __main__ block executes
+        result = subprocess.run(
+            [sys.executable, "-m", module_name],
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 minute timeout per scraper
+        )
 
         elapsed = time.time() - start
-        print(f"✓ {description} completed in {elapsed:.2f}s")
-        return True
+
+        # Print the scraper's output
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+
+        if result.returncode == 0:
+            print(f"✓ {description} completed in {elapsed:.2f}s")
+            return True
+        else:
+            print(f"✗ {description} failed after {elapsed:.2f}s (exit code: {result.returncode})")
+            return False
+
+    except subprocess.TimeoutExpired:
+        elapsed = time.time() - start
+        print(f"✗ {description} timed out after {elapsed:.2f}s")
+        return False
     except Exception as e:
         elapsed = time.time() - start
         print(f"✗ {description} failed after {elapsed:.2f}s: {e}")
