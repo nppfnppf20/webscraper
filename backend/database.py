@@ -16,6 +16,7 @@ class SupabaseDB:
         self.supabase_url = os.getenv('SUPABASE_URL')
         self.supabase_key = os.getenv('SUPABASE_ANON_KEY')
         self.database_url = os.getenv('DATABASE_URL')
+        self.schema = os.getenv('POSTGRES_SCHEMA', 'public')  # Default to 'public' schema
 
         # Initialize Supabase client
         if self.supabase_url and self.supabase_key:
@@ -28,13 +29,24 @@ class SupabaseDB:
         if self.database_url:
             try:
                 self.conn = psycopg2.connect(self.database_url)
+                # Set search_path to use the specified schema
+                if self.conn and self.schema != 'public':
+                    with self.conn.cursor() as cur:
+                        cur.execute(f"SET search_path TO {self.schema}, public")
+                        self.conn.commit()
             except Exception as e:
                 print(f"Failed to connect to database: {e}")
 
     def get_connection(self):
-        """Get a fresh database connection"""
+        """Get a fresh database connection with schema search_path set"""
         if self.database_url:
-            return psycopg2.connect(self.database_url)
+            conn = psycopg2.connect(self.database_url)
+            # Set search_path for this connection
+            if conn and self.schema != 'public':
+                with conn.cursor() as cur:
+                    cur.execute(f"SET search_path TO {self.schema}, public")
+                    conn.commit()
+            return conn
         return None
 
     def execute_query(self, query: str, params: tuple = None) -> List[Dict[str, Any]]:
