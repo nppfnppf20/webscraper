@@ -91,8 +91,13 @@ def _map_fields_for_database(rows):
             'title': 'name',  # Map title to name field
             'description': 'description',
             'app_type': 'app_type',
+            'application_type': 'application_type',  # Detailed application type
+            'development_type': 'development_type',  # Development category
             'app_size': 'app_size',
             'app_state': 'app_state',
+            'decision': 'decision',  # Planning decision details
+            'status_class': 'status_class',  # Classified status for filtering
+            'site_area_ha': 'site_area_ha',  # Site area in hectares
             'start_date': 'start_date',
             'decided_date': 'decided_date',
             'last_changed': 'last_changed',

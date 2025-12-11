@@ -33,10 +33,14 @@ def _map_fields_for_database(rows):
             'name': 'name',
             'description': 'description',
             'app_type': 'app_type',
+            'application_type': 'application_type',  # Detailed application type
+            'development_type': 'development_type',  # Development category
             'app_size': 'app_size',
             'app_state': 'app_state',
+            'decision': 'decision',  # Planning decision details
             'start_date': 'start_date',
             'decided_date': 'decided_date',
+            'last_changed': 'last_changed',  # Last change timestamp
             'address': 'address',
             'postcode': 'postcode',
             'area_name': 'area_name',
