@@ -1,45 +1,17 @@
 services:
-  - type: web
-    name: web-scraper-api
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python backend/api_server_db.py
-    envVars:
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: DATABASE_URL
-        sync: false
-      - key: FLASK_ENV
-        value: production
-
-  - type: web
-    name: web-scraper-frontend
-    env: node
-    buildCommand: cd svelte-dashboard && npm install && npm run build
-    startCommand: cd svelte-dashboard && npx vite preview --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: VITE_API_BASE_URL
-        value: https://web-scraper-api-vnue.onrender.com/api
-
   # Cron job to run all scrapers daily
   - type: cron
     name: daily-scraper
     env: python
     buildCommand: pip install -r requirements.txt
-    schedule: "0 9 * * *"  # Run at 9 AM GMT/UTC daily
+    schedule: "0 2 * * *"  # Run at 2 AM GMT/UTC daily
     command: python run_all_scrapers.py
     envVars:
+      - key: DATABASE_URL
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
         sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: DATABASE_URL
-        sync: false
+      - key: POSTGRES_SCHEMA
+        value: scraper
