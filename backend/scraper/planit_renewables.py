@@ -197,8 +197,21 @@ def normalize(record: Dict, geometry: Optional[Dict] = None, *, enable_geocode: 
     lat_f = _to_float(lat_val)
     lng_f = _to_float(lng_val)
     
+    # Debug: Print first occurrence
+    import sys
+    if not hasattr(sys, '_props_debug_printed'):
+        print(f"[DEBUG] Props lat={lat_val}, lng={lng_val}, lat_f={lat_f}, lng_f={lng_f}", flush=True)
+        print(f"[DEBUG] Props keys: {list(props.keys())[:10]}", flush=True)
+        sys._props_debug_printed = True
+    
     # Extract from GeoJSON geometry if available (fast - no external API call)
     if (lat_f is None or lng_f is None) and geometry:
+        # Debug: Print first occurrence to see format
+        import sys
+        if not hasattr(sys, '_geom_debug_printed'):
+            print(f"[DEBUG] Geometry object: {geometry}", flush=True)
+            sys._geom_debug_printed = True
+        
         if isinstance(geometry, dict):
             coords = geometry.get("coordinates", [])
             geom_type = geometry.get("type", "")
@@ -206,6 +219,7 @@ def normalize(record: Dict, geometry: Optional[Dict] = None, *, enable_geocode: 
             if geom_type == "Point" and len(coords) >= 2:
                 lng_f = _to_float(coords[0])
                 lat_f = _to_float(coords[1])
+                print(f"[DEBUG] Extracted coords: lat={lat_f}, lng={lng_f}", flush=True)
     
     # Postcode geocode fallback via postcodes.io (only if still missing)
     if enable_geocode and (lat_f is None or lng_f is None):
