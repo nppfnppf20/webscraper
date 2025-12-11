@@ -60,7 +60,7 @@ def fetch_page(session, start: date, end: date, page: int) -> Dict:
         "compress": "on",
         "search": SEARCH_TERMS,
     }
-    url = f"{PLANIT_BASE}/api/applics/json?{urlencode(params)}"
+    url = f"{PLANIT_BASE}/api/applics/geojson?{urlencode(params)}"
     print(f"[PlanIt] GET {start}..{end} page={page} - Starting request...", flush=True)
     req_start = time.time()
     # Manual short backoff loop for 429, up to a few quick retries
