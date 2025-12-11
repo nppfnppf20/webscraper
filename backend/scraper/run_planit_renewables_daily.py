@@ -97,6 +97,7 @@ def _map_fields_for_database(rows):
             'decided_date': 'decided_date',
             'last_changed': 'last_changed',
             'address': 'address',
+            'postcode': 'postcode',  # Map postcode to postcode
             'authority': 'area_name',  # Map authority to area_name
             'lat': 'latitude',  # Map lat to latitude
             'lng': 'longitude',  # Map lng to longitude
