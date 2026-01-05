@@ -98,6 +98,12 @@ if __name__ == "__main__":
             try:
                 normalized = normalize_planit_datacentres_result(raw_record)
 
+                # Filter by app_type: only keep Full, Outline, and null/empty
+                # Exclude: Conditions, Amendments, etc.
+                app_type_val = (normalized.get("app_type") or "").strip().lower()
+                if app_type_val and app_type_val not in {"full", "outline"}:
+                    continue
+
                 # Check if this is a new record (try id first, then uid)
                 record_id = normalized.get('id', '') or normalized.get('uid', '')
                 if record_id and record_id not in existing_ids:
