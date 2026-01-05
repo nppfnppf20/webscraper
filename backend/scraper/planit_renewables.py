@@ -133,22 +133,63 @@ def _parse_float_from_text(value: str) -> Optional[float]:
 
 
 def _extract_site_area_ha(other_fields: Dict) -> Optional[float]:
+    """
+    Extract site area in hectares from other_fields.
+    Handles conversion from square meters if needed.
+    Returns None if no valid area found or if value is unreasonable.
+    """
     if not isinstance(other_fields, dict):
         return None
+
+    # Maximum reasonable site area for renewables (in hectares)
+    # Largest UK solar farms are ~2,000 ha, wind farms can be larger
+    # Set max to 50,000 ha to catch obvious data errors
+    MAX_REASONABLE_HA = 50000
+
     for key, raw in other_fields.items():
         lk = str(key).lower()
         if ("area" in lk or "site" in lk) and ("ha" in lk or "hectare" in lk):
-            text = str(raw)
+            text = str(raw).lower()
             val = _parse_float_from_text(text)
             if val is not None and val >= 0:
-                return val
+                # Check if value is in square meters (common confusion)
+                if any(unit in text for unit in ["sq m", "sqm", "m²", "m2", "square m"]):
+                    val = val / 10000  # Convert m² to hectares
+
+                # Validate reasonable range
+                if val <= MAX_REASONABLE_HA:
+                    return val
+                else:
+                    # Value too large - likely data error, skip it
+                    return None
+
     # Secondary heuristic: values that explicitly mention "ha" in value text
     for key, raw in other_fields.items():
         text = str(raw).lower()
         if "ha" in text or "hectare" in text:
             val = _parse_float_from_text(text)
             if val is not None and val >= 0:
-                return val
+                # Check if actually in square meters despite "ha" in text
+                if any(unit in text for unit in ["sq m", "sqm", "m²", "m2", "square m"]):
+                    val = val / 10000
+
+                if val <= MAX_REASONABLE_HA:
+                    return val
+                else:
+                    return None
+
+    # Tertiary: check for area fields with square meter units (even if key doesn't mention "ha")
+    for key, raw in other_fields.items():
+        lk = str(key).lower()
+        if "area" in lk or "site" in lk:
+            text = str(raw).lower()
+            if any(unit in text for unit in ["sq m", "sqm", "m²", "m2", "square m"]):
+                val = _parse_float_from_text(text)
+                if val is not None and val >= 0:
+                    val = val / 10000  # Convert to hectares
+                    if val <= MAX_REASONABLE_HA:
+                        return val
+
     return None
 
 

@@ -92,72 +92,94 @@ class SupabaseDB:
             try:
                 with self.get_connection() as conn:
                     with conn.cursor() as cursor:
-                        for record in data:
-                            # Filter out 'id' column (auto-increment primary key)
-                            # and empty/None/invalid values
-                            filtered_record = {}
-                            for k, v in record.items():
-                                # Skip auto-increment id column
-                                if k == 'id':
-                                    continue
-                                # Skip various empty/invalid values
-                                if v is None or v == '' or v == 'None' or v == 'null' or v == 'NULL':
-                                    continue
-                                # Skip string representations of None for dates
-                                if isinstance(v, str) and v.strip().lower() in ('none', 'null', 'n/a', 'nan'):
-                                    continue
-                                filtered_record[k] = v
-                            
-                            if not filtered_record:
-                                continue  # Skip empty records
-                            
-                            # Get column names and values
-                            columns = list(filtered_record.keys())
-                            values = [filtered_record[col] for col in columns]
-                            placeholders = ', '.join(['%s'] * len(columns))
-                            columns_str = ', '.join([f'"{col}"' for col in columns])
-                            
-                            # Determine conflict columns (default to 'uid' if exists, otherwise first unique column)
-                            if not conflict_columns:
-                                if 'uid' in columns:
-                                    conflict_columns = ['uid']
-                                elif 'peeringdb_id' in columns:
-                                    conflict_columns = ['peeringdb_id']
-                                elif 'reference' in columns:
-                                    conflict_columns = ['reference']
+                        # Track successful and failed inserts
+                        successful_count = 0
+                        failed_count = 0
+
+                        for idx, record in enumerate(data):
+                            try:
+                                # Filter out 'id' column (auto-increment primary key)
+                                # and empty/None/invalid values
+                                filtered_record = {}
+                                for k, v in record.items():
+                                    # Skip auto-increment id column
+                                    if k == 'id':
+                                        continue
+                                    # Skip various empty/invalid values
+                                    if v is None or v == '' or v == 'None' or v == 'null' or v == 'NULL':
+                                        continue
+                                    # Skip string representations of None for dates
+                                    if isinstance(v, str) and v.strip().lower() in ('none', 'null', 'n/a', 'nan'):
+                                        continue
+                                    filtered_record[k] = v
+
+                                if not filtered_record:
+                                    continue  # Skip empty records
+
+                                # Get column names and values
+                                columns = list(filtered_record.keys())
+                                values = [filtered_record[col] for col in columns]
+                                placeholders = ', '.join(['%s'] * len(columns))
+                                columns_str = ', '.join([f'"{col}"' for col in columns])
+
+                                # Determine conflict columns (default to 'uid' if exists, otherwise first unique column)
+                                if not conflict_columns:
+                                    if 'uid' in columns:
+                                        conflict_columns = ['uid']
+                                    elif 'peeringdb_id' in columns:
+                                        conflict_columns = ['peeringdb_id']
+                                    elif 'reference' in columns:
+                                        conflict_columns = ['reference']
+                                    else:
+                                        # If no obvious unique column, skip to avoid errors
+                                        print(f"Warning: No unique column found for table {table}, inserting only")
+                                        query = f"INSERT INTO {table} ({columns_str}) VALUES ({placeholders})"
+                                        cursor.execute(query, values)
+                                        successful_count += 1
+                                        continue
+
+                                conflict_str = ', '.join([f'"{col}"' for col in conflict_columns])
+
+                                # Build update clause for ON CONFLICT
+                                update_cols = [col for col in columns if col not in conflict_columns and col != 'id']
+                                update_str = ', '.join([f'"{col}" = EXCLUDED."{col}"' for col in update_cols])
+
+                                # Build upsert query
+                                if update_str:
+                                    query = f"""
+                                        INSERT INTO {table} ({columns_str})
+                                        VALUES ({placeholders})
+                                        ON CONFLICT ({conflict_str})
+                                        DO UPDATE SET {update_str}
+                                    """
                                 else:
-                                    # If no obvious unique column, skip to avoid errors
-                                    print(f"Warning: No unique column found for table {table}, inserting only")
-                                    query = f"INSERT INTO {table} ({columns_str}) VALUES ({placeholders})"
-                                    cursor.execute(query, values)
-                                    continue
-                            
-                            conflict_str = ', '.join([f'"{col}"' for col in conflict_columns])
-                            
-                            # Build update clause for ON CONFLICT
-                            update_cols = [col for col in columns if col not in conflict_columns and col != 'id']
-                            update_str = ', '.join([f'"{col}" = EXCLUDED."{col}"' for col in update_cols])
-                            
-                            # Build upsert query
-                            if update_str:
-                                query = f"""
-                                    INSERT INTO {table} ({columns_str})
-                                    VALUES ({placeholders})
-                                    ON CONFLICT ({conflict_str}) 
-                                    DO UPDATE SET {update_str}
-                                """
-                            else:
-                                # If no columns to update, just do nothing on conflict
-                                query = f"""
-                                    INSERT INTO {table} ({columns_str})
-                                    VALUES ({placeholders})
-                                    ON CONFLICT ({conflict_str}) DO NOTHING
-                                """
-                            
-                            cursor.execute(query, values)
-                        
+                                    # If no columns to update, just do nothing on conflict
+                                    query = f"""
+                                        INSERT INTO {table} ({columns_str})
+                                        VALUES ({placeholders})
+                                        ON CONFLICT ({conflict_str}) DO NOTHING
+                                    """
+
+                                cursor.execute(query, values)
+                                successful_count += 1
+
+                            except Exception as record_error:
+                                failed_count += 1
+                                # Log the error but continue with next record
+                                uid_val = record.get('uid', record.get('name', record.get('reference', f'record_{idx}')))
+                                print(f"⚠️  Skipped record {uid_val}: {str(record_error)[:100]}")
+                                # Continue to next record instead of failing entire batch
+                                continue
+
                         conn.commit()
-                        return True
+
+                        # Report results
+                        if successful_count > 0:
+                            print(f"✅ Successfully inserted/updated {successful_count} records to {table}")
+                        if failed_count > 0:
+                            print(f"⚠️  Skipped {failed_count} records due to data errors")
+
+                        return successful_count > 0
             except Exception as e:
                 print(f"PostgreSQL upsert failed: {e}")
                 import traceback
