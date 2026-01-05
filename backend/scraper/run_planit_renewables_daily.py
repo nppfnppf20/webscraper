@@ -56,6 +56,13 @@ def fetch_recent_renewables_limited(days_back: int = 30, max_pages: int = 3) -> 
                     continue
 
                 row = normalize(props, geometry=geom, enable_geocode=False)
+
+                # Filter by app_type: only keep Full, Outline, and null/empty
+                # Exclude: Conditions, Amendments, etc.
+                app_type_val = (row.get("app_type") or "").strip().lower()
+                if app_type_val and app_type_val not in {"full", "outline"}:
+                    continue
+
                 id_val = row.get("id", "")
                 if id_val and id_val not in seen:
                     seen[id_val] = row
