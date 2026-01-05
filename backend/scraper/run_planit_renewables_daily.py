@@ -63,6 +63,12 @@ def fetch_recent_renewables_limited(days_back: int = 30, max_pages: int = 3) -> 
                 if app_type_val and app_type_val not in {"full", "outline"}:
                     continue
 
+                # Filter by app_size: exclude Small only
+                # Keep: Large, Very Large, Medium, null/empty
+                app_size_val = (row.get("app_size") or "").strip().lower()
+                if app_size_val == "small":
+                    continue
+
                 id_val = row.get("id", "")
                 if id_val and id_val not in seen:
                     seen[id_val] = row
