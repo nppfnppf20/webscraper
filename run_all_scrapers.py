@@ -66,6 +66,7 @@ def main():
         ("backend.scraper.run_planit_api_datacentres", "PlanIt Datacentres"),
         ("backend.scraper.run_planit_renewables_daily", "PlanIt Renewables"),
         ("backend.scraper.run_west_lindsey", "West Lindsey Planning"),
+        ("backend.scraper.run_contracts_finder", "Contracts Finder"),
     ]
 
     # Run each scraper

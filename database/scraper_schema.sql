@@ -166,8 +166,41 @@ CREATE TRIGGER update_planit_datacentres_updated_at
     FOR EACH ROW EXECUTE FUNCTION scraper.update_updated_at_column();
 
 DROP TRIGGER IF EXISTS update_planit_renewables_updated_at ON scraper.planit_renewables;
-CREATE TRIGGER update_planit_renewables_updated_at 
-    BEFORE UPDATE ON scraper.planit_renewables 
+CREATE TRIGGER update_planit_renewables_updated_at
+    BEFORE UPDATE ON scraper.planit_renewables
+    FOR EACH ROW EXECUTE FUNCTION scraper.update_updated_at_column();
+
+-- Table for Contracts Finder (UK Government Contract Opportunities)
+CREATE TABLE IF NOT EXISTS scraper.contracts_finder (
+    id SERIAL PRIMARY KEY,
+    notice_id TEXT UNIQUE,
+    title TEXT,
+    description TEXT,
+    organisation TEXT,
+    published_date TIMESTAMP WITH TIME ZONE,
+    closing_date TIMESTAMP WITH TIME ZONE,
+    value_low DECIMAL(15, 2),
+    value_high DECIMAL(15, 2),
+    status TEXT,
+    notice_type TEXT,
+    region TEXT,
+    postcode TEXT,
+    cpv_codes TEXT,
+    suitable_for_sme BOOLEAN,
+    suitable_for_vco BOOLEAN,
+    url TEXT,
+    last_scraped TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_scraper_contracts_finder_notice_id ON scraper.contracts_finder(notice_id);
+CREATE INDEX IF NOT EXISTS idx_scraper_contracts_finder_status ON scraper.contracts_finder(status);
+CREATE INDEX IF NOT EXISTS idx_scraper_contracts_finder_published ON scraper.contracts_finder(published_date);
+
+DROP TRIGGER IF EXISTS update_contracts_finder_updated_at ON scraper.contracts_finder;
+CREATE TRIGGER update_contracts_finder_updated_at
+    BEFORE UPDATE ON scraper.contracts_finder
     FOR EACH ROW EXECUTE FUNCTION scraper.update_updated_at_column();
 
 -- Grant permissions (adjust as needed)
