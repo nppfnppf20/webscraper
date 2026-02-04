@@ -71,8 +71,20 @@ if __name__ == "__main__":
 
         print(f"[Contracts Finder] Found {len(existing_ids)} existing records in database")
 
-        # Fetch notices from last 7 days
-        raw_results = fetch_notices_from_contracts_finder()
+        # Fetch notices from last 7 days, filtering for planning/viability keywords
+        keywords = ["planning", "viability"]
+        raw_results = []
+        seen_ids = set()
+
+        for keyword in keywords:
+            print(f"[Contracts Finder] Searching for keyword: '{keyword}'")
+            results = fetch_notices_from_contracts_finder(keyword=keyword)
+            for notice in results:
+                notice_id = notice.get('item', notice).get('id', '')
+                if notice_id and notice_id not in seen_ids:
+                    seen_ids.add(notice_id)
+                    raw_results.append(notice)
+            print(f"[Contracts Finder] Total unique results so far: {len(raw_results)}")
 
         print(f"[Contracts Finder] Processing {len(raw_results)} API results...")
 
