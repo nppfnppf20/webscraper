@@ -71,8 +71,8 @@ if __name__ == "__main__":
 
         print(f"[Contracts Finder] Found {len(existing_ids)} existing records in database")
 
-        # Fetch notices from last 7 days, filtering for planning/viability keywords
-        keywords = ["planning", "viability"]
+        # Fetch notices from last 7 days with 'viability' or 'planning' keywords
+        keywords = ["viability", "planning"]
         raw_results = []
         seen_ids = set()
 
